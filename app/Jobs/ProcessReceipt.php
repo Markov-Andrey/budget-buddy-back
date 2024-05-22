@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use GeminiAPI\Laravel\Facades\Gemini;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class ProcessReceipt implements ShouldQueue
 {
@@ -24,15 +25,14 @@ class ProcessReceipt implements ShouldQueue
 
     public function handle()
     {
-        $prompt = 'Это чек?';
+        $filePath = storage_path('app/public/receipts/' . $this->receipt->image_path);
+        $prompt = 'Привет! Как жизнь?';
         try {
-            $response = Gemini::generateTextUsingImage(
-                'image/jpeg',
-                base64_encode(file_get_contents(storage_path('app/public/receipts/' . $this->receipt->image_path))),
-                $prompt,
+            $response = Gemini::generateText(
+                $prompt
             );
 
-            dd($response);
+            Log::info('Receipt processing result: ' . $response);
 
             // TODO Реальная логика обработки чека
             // https://github.com/gemini-api-php/laravel
