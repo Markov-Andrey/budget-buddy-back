@@ -7,12 +7,12 @@ namespace App\MoonShine\Resources;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Receipts;
 
+use Illuminate\Support\Facades\App;
 use MoonShine\Fields\Date;
 use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Fields\Switcher;
 use MoonShine\Fields\Text;
 use MoonShine\Resources\ModelResource;
-use MoonShine\Decorations\Block;
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Field;
 use MoonShine\Components\MoonShineComponent;
@@ -23,8 +23,7 @@ use MoonShine\Components\MoonShineComponent;
 class ReceiptsResource extends ModelResource
 {
     protected string $model = Receipts::class;
-
-    protected string $title = 'Receipts';
+    protected string $title = 'Чеки в обработке';
 
     /**
      * @return list<MoonShineComponent|Field>
@@ -34,7 +33,7 @@ class ReceiptsResource extends ModelResource
         return [
             ID::make()->sortable(),
             Text::make('image_path', 'image_path'),
-            // BelongsTo::make('image_path', 'image_path', resource: new ),
+            BelongsTo::make('user_id', 'user', resource: new UserResource()),
             Switcher::make('processed', 'processed'),
             Switcher::make('error', 'error'),
             Date::make('', 'created_at')->hideOnAll()->showOnIndex(),
