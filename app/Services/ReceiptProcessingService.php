@@ -32,9 +32,12 @@ class ReceiptProcessingService
 
     private static function validate($response)
     {
-        $defaultStructure =  config('api.default_structure');
+        $defaultStructure = config('api.default_structure');
 
-        // Проходимся по ключам базовой структуры и проверяем их наличие в ответе
+        if (!is_array($response)) {
+            $response = [];
+        }
+
         foreach ($defaultStructure as $key => $defaultValue) {
             if (!array_key_exists($key, $response)) {
                 $response[$key] = $defaultValue;

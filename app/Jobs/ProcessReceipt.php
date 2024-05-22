@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\ReceiptsData;
 use App\Models\Receipts;
+use App\Models\ReceiptsOrganization;
 use App\Services\ReceiptProcessingService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,10 +40,10 @@ class ProcessReceipt implements ShouldQueue
             Log::info('API Receipt processing result: ' . $response);
             $data = ReceiptProcessingService::getInfo($response);
 
-            if (isset($data['data']) && is_array($data['data']['address'])) {
-                ReceiptsData::create([
+            if (isset($data['data']['address']) && is_array($data['data']['address'])) {
+                ReceiptsOrganization::create([
                     'receipts_id' => $this->receipt->id,
-                    'organization' => $data['organization'] ?? null,
+                    'name' => $data['data']['organization'] ?? null,
                     'city' => $data['data']['address']['city'] ?? null,
                     'street' => $data['data']['address']['street'] ?? null,
                     'entrance' => $data['data']['address']['entrance'] ?? null,
@@ -50,13 +51,15 @@ class ProcessReceipt implements ShouldQueue
             }
             if (isset($data['data']['items']) && is_array($data['data']['items'])) {
                 foreach ($data['data']['items'] as $item) {
-                    ReceiptsData::create([
-                        'receipts_id' => $this->receipt->id,
-                        'name' => $item['organization'] ?? null,
-                        'quantity' => $item['quantity'] ?? null,
-                        'weight' => $item['weight'] ?? null,
-                        'price' => $item['price'] ?? null,
-                    ]);
+                    if (isset($item)) {
+                        ReceiptsData::create([
+                            'receipts_id' => $this->receipt->id,
+                            'name' => $item['name'] ?? null,
+                            'quantity' => $item['quantity'] ?? null,
+                            'weight' => $item['weight'] ?? null,
+                            'price' => $item['price'] ?? null,
+                        ]);
+                    }
                 }
             }
 
