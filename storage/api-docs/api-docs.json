@@ -1,0 +1,83 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Budget Buddy",
+        "description": "Documentation for API",
+        "version": "0.0.1"
+    },
+    "servers": [
+        {
+            "url": "http://foundarium/api",
+            "description": "Auto API test server"
+        }
+    ],
+    "paths": {
+        "/api/receipts": {
+            "post": {
+                "tags": [
+                    "Receipts"
+                ],
+                "summary": "Store receipt(s)",
+                "operationId": "4cfb30ad2263eecc46a0961f0f779f81",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "receipt": {
+                                        "description": "The receipt file(s) to upload",
+                                        "type": "file",
+                                        "format": "file",
+                                        "example": "receipt.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Receipt(s) uploaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Receipt(s) uploaded successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No receipt uploaded",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No receipt uploaded"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Get",
+            "description": "Get methods"
+        }
+    ]
+}

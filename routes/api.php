@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ReceiptsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/hello', function () {
     return response()->json(['message' => 'Hello!']);
 });
-
+Route::post('/images', [ReceiptsController::class, 'store']);
