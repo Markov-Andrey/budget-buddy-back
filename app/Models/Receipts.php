@@ -14,15 +14,27 @@ class Receipts extends Model
         'user_id',
         'processed',
         'error',
+        'annulled',
     ];
 
     protected $casts = [
         'processed' => 'boolean',
         'error' => 'boolean',
+        'annulled' => 'boolean',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function data()
+    {
+        return $this->hasMany(ReceiptsData::class);
+    }
+
+    public function address()
+    {
+        return $this->hasMany(ReceiptsOrganization::class);
     }
 }

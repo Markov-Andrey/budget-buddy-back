@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\ReceiptsData;
 use App\Models\Receipts;
+use App\Services\ReceiptProcessingService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,22 +27,46 @@ class ProcessReceipt implements ShouldQueue
 
     public function handle()
     {
-        $filePath = storage_path('app/public/receipts/' . $this->receipt->image_path);
-        $prompt = 'Привет! Как жизнь?';
+        // https://github.com/gemini-api-php/laravel
+        $filePath = storage_path('app/public/' . $this->receipt->image_path);
+        $prompt = config('api.prompts.check_processing');
         try {
-            $response = Gemini::generateText(
-                $prompt
+            $response = Gemini::generateTextUsingImageFile(
+                'image/jpeg',
+                $filePath,
+                $prompt,
             );
+            Log::info('API Receipt processing result: ' . $response);
+            $data = ReceiptProcessingService::getInfo($response);
 
-            Log::info('Receipt processing result: ' . $response);
+            if (isset($data['data']) && is_array($data['data']['address'])) {
+                ReceiptsData::create([
+                    'receipts_id' => $this->receipt->id,
+                    'organization' => $data['organization'] ?? null,
+                    'city' => $data['data']['address']['city'] ?? null,
+                    'street' => $data['data']['address']['street'] ?? null,
+                    'entrance' => $data['data']['address']['entrance'] ?? null,
+                ]);
+            }
+            if (isset($data['data']['items']) && is_array($data['data']['items'])) {
+                foreach ($data['data']['items'] as $item) {
+                    ReceiptsData::create([
+                        'receipts_id' => $this->receipt->id,
+                        'name' => $item['organization'] ?? null,
+                        'quantity' => $item['quantity'] ?? null,
+                        'weight' => $item['weight'] ?? null,
+                        'price' => $item['price'] ?? null,
+                    ]);
+                }
+            }
 
-            // TODO Реальная логика обработки чека
-            // https://github.com/gemini-api-php/laravel
             $this->receipt->processed = true;
+            $this->receipt->error = $data['error'];
             $this->receipt->save();
         } catch (Exception $e) {
-            logger('Error processing receipt: ' . $e->getMessage());
+            logger('API Error processing receipt: ' . $e->getMessage());
 
+            $this->receipt->processed = true;
             $this->receipt->error = true;
             $this->receipt->save();
         }

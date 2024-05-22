@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\ReceiptsData;
+use App\Models\ReceiptsOrganization;
+use App\Services\ReceiptProcessingService;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +17,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/hello', function () {
-    return response()->json(['message' => 'Hello!']);
+    return dd('hello');
 });
+
