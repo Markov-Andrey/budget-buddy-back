@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\ProcessReceipt;
 use App\Models\Receipts;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -30,8 +29,6 @@ class ReceiptsController extends Controller
                 $image->processed = false;
                 $image->error = false;
                 $image->save();
-
-                ProcessReceipt::dispatch($image);
             }
 
             return response()->json(['message' => 'Receipt(s) uploaded successfully'], 201);

@@ -17,6 +17,37 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/hello', function () {
-    return dd('hello');
+    $response = '
+    {
+        "organization": "Санта Ритейл",
+        "address": {
+            "city": "Минск",
+            "street": "Володько",
+            "entrance": "9, пом. 6"
+        },
+        "items": [
+            {
+                "name": "Карамель Чупа Чупс Ассорти",
+                "quantity": 1,
+                "weight": 0.012,
+                "price": 0.53
+            },
+            {
+                "name": "Коктейль молочный ТОП карамельный",
+                "quantity": 1,
+                "weight": 0.45,
+                "price": 2.55
+            },
+            {
+                "name": null,
+                "quantity": 1,
+                "weight": 0,
+                "price": null
+            }
+        ]
+    }
+    ';
+    $data = ReceiptProcessingService::getInfo($response);
+    return dd($data);
 });
 

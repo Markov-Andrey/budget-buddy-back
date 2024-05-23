@@ -32,31 +32,29 @@ return [
                         "price": 2.55
                     },
                     {
-                        "name": NULL,
+                        "name": null,
                         "quantity": 1,
                         "weight": 0,
-                        "price": NULL
+                        "price": null
                     }
-                ],
-                "totalPrice": 3.08
+                ]
             }
         ',
     ],
     'default_structure' => [
-        "organization" => NULL,
+        "organization" => null,
         "address" => [
-            "city" => NULL,
-            "street" => NULL,
-            "entrance" => NULL
+            "city" => null,
+            "street" => null,
+            "entrance" => null
         ],
         "items" => [
             [
-                "name" => NULL,
-                "quantity" => NULL,
-                "weight" => NULL,
-                "price" => NULL
+                "name" => null,
+                "quantity" => null,
+                "weight" => null,
+                "price" => null
             ]
         ],
-        "totalPrice" => NULL
     ]
 ];

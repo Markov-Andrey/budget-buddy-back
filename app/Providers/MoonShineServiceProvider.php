@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Receipts;
 use App\MoonShine\Resources\ReceiptsDataResource;
 use App\MoonShine\Resources\ReceiptsOrganizationResource;
 use App\MoonShine\Resources\ReceiptsResource;
 use App\MoonShine\Resources\UserResource;
+use App\Observers\ReceiptObserver;
 use MoonShine\Providers\MoonShineApplicationServiceProvider;
 use MoonShine\Menu\MenuGroup;
 use MoonShine\Menu\MenuItem;
@@ -69,6 +71,13 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                 new ReceiptsOrganizationResource()
             ),
         ];
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        Receipts::observe(ReceiptObserver::class);
     }
 
     /**
