@@ -7,9 +7,9 @@ namespace App\MoonShine\Resources;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\GroupMemberships;
 
+use MoonShine\Fields\Date;
 use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Resources\ModelResource;
-use MoonShine\Decorations\Block;
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Field;
 use MoonShine\Components\MoonShineComponent;
@@ -36,6 +36,8 @@ class GroupMembershipsResource extends ModelResource
             BelongsTo::make('group', 'group', resource: new GroupsResource())
                 ->nullable()
                 ->searchable(),
+            Date::make('created_at', 'created_at')->hideOnForm(),
+            Date::make('updated_at', 'updated_at')->hideOnForm(),
         ];
     }
 

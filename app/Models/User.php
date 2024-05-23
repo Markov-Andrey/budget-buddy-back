@@ -44,6 +44,13 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function currentGroup()
+    {
+        return $this->hasOne(GroupMemberships::class)
+            ->whereNull('deleted_at')
+            ->latest();
+    }
+
     public function groupMembership()
     {
         return $this->hasMany(GroupMemberships::class);

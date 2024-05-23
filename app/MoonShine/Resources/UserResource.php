@@ -9,6 +9,7 @@ use App\Models\User;
 
 use MoonShine\Fields\Email;
 use MoonShine\Fields\Password;
+use MoonShine\Fields\Relationships\HasOne;
 use MoonShine\Fields\Text;
 use MoonShine\Resources\ModelResource;
 use MoonShine\Decorations\Block;
@@ -36,6 +37,10 @@ class UserResource extends ModelResource
             Text::make('name', 'name'),
             Email::make('email', 'email'),
             Password::make('password', 'password'),
+            HasOne::make('currentGroup', 'currentGroup', resource: new GroupMembershipsResource())
+                ->fields([
+                    Text::make('group', 'group', fn($item) => $item->group->title),
+                ]),
         ];
     }
 
