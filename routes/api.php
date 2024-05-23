@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ReceiptsController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,12 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Маршрут для регистрации пользователя
+Route::post('/register', [AuthController::class, 'register']);
+// Маршрут для аутентификации пользователя
+Route::post('/login', [AuthController::class, 'login']);
 
-
-Route::get('/hello', function () {
+Route::get('hello', function () {
     return response()->json(['message' => 'Hello!']);
 });
 Route::post('/images', [ReceiptsController::class, 'store']);
