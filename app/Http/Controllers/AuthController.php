@@ -9,6 +9,39 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+
+    /**
+     * @OA\Post(
+     *     path="/api/register",
+     *     summary="Register a new user",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password"},
+     *             @OA\Property(property="name", type="string", example="John Doe", description="User's name"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com", description="User's email"),
+     *             @OA\Property(property="password", type="string", format="password", example="password", description="User's password (min: 8 characters)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User registered successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="User registered successfully"),
+     *             @OA\Property(property="user", type="object", ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object", example={"email": {"The email field is required."}})
+     *         )
+     *     )
+     * )
+     */
     public function register(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([

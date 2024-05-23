@@ -58,34 +58,40 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                    new MoonShineUserRoleResource()
                ),
                 MenuItem::make(
+                    'Worker',
+                    new JobsResource()
+                )->badge(fn() => Jobs::query()->count()),
+            ]),
+            MenuGroup::make('Чеки', [
+                MenuItem::make(
+                    'Чеки в обработке',
+                    new ReceiptsResource()
+                ),
+                MenuItem::make(
+                    'Товары из чеков',
+                    new ReceiptsDataResource()
+                ),
+                MenuItem::make(
+                    'Адреса',
+                    new ReceiptsOrganizationResource()
+                ),
+            ]),
+            MenuGroup::make('Пользователи', [
+                MenuItem::make(
                     static fn() => __('Users'),
                     new UserResource()
                 ),
             ]),
-            MenuItem::make(
-                'Чеки в обработке',
-                new ReceiptsResource()
-            ),
-            MenuItem::make(
-                'Товары из чеков',
-                new ReceiptsDataResource()
-            ),
-            MenuItem::make(
-                'Адреса',
-                new ReceiptsOrganizationResource()
-            ),
-            MenuItem::make(
-                'Worker',
-                new JobsResource()
-            )->badge(fn() => Jobs::query()->count()),
-            MenuItem::make(
-                'Group',
-                new GroupsResource()
-            ),
-            MenuItem::make(
-                'GroupMemberships',
-                new GroupMembershipsResource()
-            ),
+            MenuGroup::make('Группы', [
+                MenuItem::make(
+                    'Group',
+                    new GroupsResource()
+                ),
+                MenuItem::make(
+                    'GroupMemberships',
+                    new GroupMembershipsResource()
+                ),
+            ]),
         ];
     }
     public function boot(): void

@@ -1,35 +1,48 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Budget Buddy",
-        "description": "Documentation for API",
+        "title": "API Budget Buddy",
+        "description": "API Budget Buddy",
+        "contact": {
+            "email": "andremarkov@icloud.com"
+        },
         "version": "0.0.1"
     },
-    "servers": [
-        {
-            "url": "http://foundarium/api",
-            "description": "Auto API test server"
-        }
-    ],
     "paths": {
-        "/api/receipts": {
+        "/api/register": {
             "post": {
                 "tags": [
-                    "Receipts"
+                    "Authentication"
                 ],
-                "summary": "Store receipt(s)",
-                "operationId": "4cfb30ad2263eecc46a0961f0f779f81",
+                "summary": "Register a new user",
+                "operationId": "8a56853624e025573120a09a4c75d468",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
                                 "properties": {
-                                    "receipt": {
-                                        "description": "The receipt file(s) to upload",
-                                        "type": "file",
-                                        "format": "file",
-                                        "example": "receipt.jpg"
+                                    "name": {
+                                        "description": "User's name",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "description": "User's email",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "description": "User's password (min: 8 characters)",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
                                     }
                                 },
                                 "type": "object"
@@ -38,15 +51,18 @@
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Receipt(s) uploaded successfully",
+                    "200": {
+                        "description": "User registered successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Receipt(s) uploaded successfully"
+                                            "example": "User registered successfully"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
                                         }
                                     },
                                     "type": "object"
@@ -54,15 +70,23 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "No receipt uploaded",
+                    "422": {
+                        "description": "Validation error",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "No receipt uploaded"
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "The email field is required."
+                                                ]
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -74,10 +98,36 @@
             }
         }
     },
-    "tags": [
-        {
-            "name": "Get",
-            "description": "Get methods"
+    "components": {
+        "schemas": {
+            "User": {
+                "title": "User",
+                "description": "User object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
         }
-    ]
+    }
 }
