@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Jobs;
 use App\Models\Receipts;
+use App\MoonShine\Resources\JobsResource;
 use App\MoonShine\Resources\ReceiptsDataResource;
 use App\MoonShine\Resources\ReceiptsOrganizationResource;
 use App\MoonShine\Resources\ReceiptsResource;
@@ -70,14 +72,11 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                 'Адреса',
                 new ReceiptsOrganizationResource()
             ),
+            MenuItem::make(
+                'Worker',
+                new JobsResource()
+            )->badge(fn() => Jobs::query()->count()),
         ];
-    }
-
-    public function boot(): void
-    {
-        parent::boot();
-
-        Receipts::observe(ReceiptObserver::class);
     }
 
     /**
