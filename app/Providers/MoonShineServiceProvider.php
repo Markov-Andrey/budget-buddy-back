@@ -6,6 +6,8 @@ namespace App\Providers;
 
 use App\Models\Jobs;
 use App\Models\Receipts;
+use App\MoonShine\Resources\GroupMembershipsResource;
+use App\MoonShine\Resources\GroupsResource;
 use App\MoonShine\Resources\JobsResource;
 use App\MoonShine\Resources\ReceiptsDataResource;
 use App\MoonShine\Resources\ReceiptsOrganizationResource;
@@ -76,7 +78,20 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                 'Worker',
                 new JobsResource()
             )->badge(fn() => Jobs::query()->count()),
+            MenuItem::make(
+                'Group',
+                new GroupsResource()
+            ),
+            MenuItem::make(
+                'GroupMemberships',
+                new GroupMembershipsResource()
+            ),
         ];
+    }
+    public function boot(): void
+    {
+        parent::boot();
+        Receipts::observe(ReceiptObserver::class);
     }
 
     /**

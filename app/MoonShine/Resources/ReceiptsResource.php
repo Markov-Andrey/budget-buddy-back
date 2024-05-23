@@ -72,13 +72,6 @@ class ReceiptsResource extends ModelResource
         ];
     }
 
-    protected function afterCreated(Model $item): Model
-    {
-        ProcessReceipt::dispatch($item);
-
-        return $item;
-    }
-
     /**
      * @param Receipts $item
      *
