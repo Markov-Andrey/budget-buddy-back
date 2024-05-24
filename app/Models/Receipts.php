@@ -15,6 +15,7 @@ class Receipts extends Model
         'processed',
         'error',
         'annulled',
+        'datetime',
     ];
 
     protected $casts = [

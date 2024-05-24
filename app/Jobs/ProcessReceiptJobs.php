@@ -6,6 +6,7 @@ use App\Models\ReceiptsData;
 use App\Models\Receipts;
 use App\Models\ReceiptsOrganization;
 use App\Services\ApiResponseStabilizeService;
+use DateTime;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -40,6 +41,8 @@ class ProcessReceiptJobs implements ShouldQueue
             Log::info('API Receipt processing result: ' . $response);
             $defaultStructure = config('api.check_processing.default_structure');
             $data = ApiResponseStabilizeService::getInfo($response, $defaultStructure);
+            $datetimeString = $data['data']['datetime'] ?? null;
+            $datetime = DateTime::createFromFormat('Y-m-d H:i', $datetimeString);
 
             if (isset($data['data']['address']) && is_array($data['data']['address'])) {
                 ReceiptsOrganization::create([
@@ -48,6 +51,7 @@ class ProcessReceiptJobs implements ShouldQueue
                     'city' => $data['data']['address']['city'] ?? null,
                     'street' => $data['data']['address']['street'] ?? null,
                     'entrance' => $data['data']['address']['entrance'] ?? null,
+                    'datetime' => $datetime->format('Y-m-d H:i:s') ?? null,
                 ]);
             }
             if (isset($data['data']['items']) && is_array($data['data']['items'])) {
