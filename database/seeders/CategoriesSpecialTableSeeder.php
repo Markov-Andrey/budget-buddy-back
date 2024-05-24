@@ -26,6 +26,7 @@ class CategoriesSpecialTableSeeder extends Seeder
             'Абонементы',
             'Мебель',
             'Подарки',
+            'Канцелярия и печатная продукция',
         ];
 
         foreach ($names as $name) {
