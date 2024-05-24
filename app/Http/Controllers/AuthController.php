@@ -19,8 +19,8 @@ class AuthController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"name","email","password"},
-     *             @OA\Property(property="name", type="string", example="John Doe", description="User's name"),
-     *             @OA\Property(property="email", type="string", format="email", example="john@example.com", description="User's email"),
+     *             @OA\Property(property="name", type="string", example="Swagger API", description="User's name"),
+     *             @OA\Property(property="email", type="string", format="email", example="swagger@example.com", description="User's email"),
      *             @OA\Property(property="password", type="string", format="password", example="password", description="User's password (min: 8 characters)")
      *         )
      *     ),
@@ -70,8 +70,8 @@ class AuthController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"email", "password"},
-     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
-     *             @OA\Property(property="password", type="string", example="password123"),
+     *             @OA\Property(property="email", type="string", format="email", example="swagger@example.com"),
+     *             @OA\Property(property="password", type="string", example="password"),
      *             @OA\Property(property="remember", type="boolean", example=true)
      *         )
      *     ),

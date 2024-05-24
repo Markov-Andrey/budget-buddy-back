@@ -31,13 +31,13 @@
                                     "name": {
                                         "description": "User's name",
                                         "type": "string",
-                                        "example": "John Doe"
+                                        "example": "Swagger API"
                                     },
                                     "email": {
                                         "description": "User's email",
                                         "type": "string",
                                         "format": "email",
-                                        "example": "john@example.com"
+                                        "example": "swagger@example.com"
                                     },
                                     "password": {
                                         "description": "User's password (min: 8 characters)",
@@ -119,11 +119,11 @@
                                     "email": {
                                         "type": "string",
                                         "format": "email",
-                                        "example": "user@example.com"
+                                        "example": "swagger@example.com"
                                     },
                                     "password": {
                                         "type": "string",
-                                        "example": "password123"
+                                        "example": "password"
                                     },
                                     "remember": {
                                         "type": "boolean",
@@ -201,6 +201,78 @@
                     }
                 }
             }
+        },
+        "/api/receipts/add": {
+            "post": {
+                "tags": [
+                    "Receipts"
+                ],
+                "summary": "Upload receipts",
+                "description": "Метод для загрузки и сохранения квитанций.",
+                "operationId": "d30d1884bf0c3f0f629496362ab26e93",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "receipt"
+                                ],
+                                "properties": {
+                                    "receipt": {
+                                        "description": "Массив файлов квитанций для загрузки",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Receipt(s) uploaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Receipt(s) uploaded successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No receipt uploaded",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No receipt uploaded"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -232,6 +304,15 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearer_token": {
+                "type": "http",
+                "scheme": "bearer",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
             }
         }
     }

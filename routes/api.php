@@ -24,4 +24,6 @@ Route::prefix('auth')->group(function () {
 Route::get('hello', function () {
     return response()->json(['message' => 'Hello!']);
 });
-Route::post('/images', [ReceiptsController::class, 'store']);
+Route::prefix('receipts')->group(function () {
+    Route::post('/add', [ReceiptsController::class, 'store'])->middleware('auth:sanctum');
+});
