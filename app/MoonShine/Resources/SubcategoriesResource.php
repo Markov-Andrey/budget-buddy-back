@@ -33,7 +33,9 @@ class SubcategoriesResource extends ModelResource
         return [
             ID::make()->sortable(),
             Text::make('name', 'name'),
-            BelongsTo::make('category_id', 'category_id', resource: new CategoriesResource()),
+            BelongsTo::make('category_id', 'category', resource: new CategoriesResource())
+                ->searchable()
+                ->nullable(),
             Date::make('created_at', 'created_at')
                 ->hideOnForm()
                 ->format('d.m.y H:i'),
