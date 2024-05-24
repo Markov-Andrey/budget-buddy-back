@@ -46,7 +46,7 @@ class ReceiptsResource extends ModelResource
             Switcher::make('annulled', 'annulled')
                 ->hideOnCreate()
                 ->updateOnPreview(),
-            Date::make('', 'created_at')
+            Date::make('created_at', 'created_at')
                 ->format('d.m.y H:i')
                 ->hideOnAll()
                 ->showOnIndex()
