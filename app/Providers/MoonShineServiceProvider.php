@@ -6,12 +6,14 @@ namespace App\Providers;
 
 use App\Models\Jobs;
 use App\Models\Receipts;
+use App\MoonShine\Resources\CategoriesResource;
 use App\MoonShine\Resources\GroupMembershipsResource;
 use App\MoonShine\Resources\GroupsResource;
 use App\MoonShine\Resources\JobsResource;
 use App\MoonShine\Resources\ReceiptsDataResource;
 use App\MoonShine\Resources\ReceiptsOrganizationResource;
 use App\MoonShine\Resources\ReceiptsResource;
+use App\MoonShine\Resources\SubcategoriesResource;
 use App\MoonShine\Resources\UserResource;
 use App\Observers\ReceiptObserver;
 use MoonShine\Providers\MoonShineApplicationServiceProvider;
@@ -76,13 +78,11 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                     new ReceiptsOrganizationResource()
                 ),
             ]),
-            MenuGroup::make('Пользователи', [
+            MenuGroup::make('Пользователи/группы', [
                 MenuItem::make(
                     static fn() => __('Users'),
                     new UserResource()
                 ),
-            ]),
-            MenuGroup::make('Группы', [
                 MenuItem::make(
                     'Group',
                     new GroupsResource()
@@ -90,6 +90,16 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                 MenuItem::make(
                     'GroupMemberships',
                     new GroupMembershipsResource()
+                ),
+            ]),
+            MenuGroup::make('Категории/подкатегории', [
+                MenuItem::make(
+                    'Categories',
+                    new CategoriesResource()
+                ),
+                MenuItem::make(
+                    'Subcategories',
+                    new SubcategoriesResource()
                 ),
             ]),
         ];
