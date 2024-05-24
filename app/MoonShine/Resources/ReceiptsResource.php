@@ -49,10 +49,8 @@ class ReceiptsResource extends ModelResource
                 ->hideOnCreate()
                 ->updateOnPreview(),
             Date::make('datetime', 'datetime')
-                ->format('d.m.y H:i')
-                ->hideOnAll()
-                ->showOnIndex()
-                ->showOnDetail(),
+                ->withTime()
+                ->format('d.m.y H:i'),
             Date::make('created_at', 'created_at')
                 ->format('d.m.y H:i')
                 ->hideOnAll()

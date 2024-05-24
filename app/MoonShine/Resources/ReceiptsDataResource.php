@@ -31,6 +31,7 @@ class ReceiptsDataResource extends ModelResource
     {
         return [
             ID::make()->sortable(),
+            BelongsTo::make('receipt' , 'receipt', resource: new ReceiptsResource()),
             Text::make('name', 'name'),
             Text::make('quantity', 'quantity'),
             Text::make('weight', 'weight'),
