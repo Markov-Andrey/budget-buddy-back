@@ -12,7 +12,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/register",
+     *     path="/api/auth/register",
      *     summary="Register a new user",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
@@ -59,6 +59,38 @@ class AuthController extends Controller
         return response()->json(['message' => 'User registered successfully', 'user' => $user]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/auth/login",
+     *     summary="User login",
+     *     description="Authenticate a user and return a token",
+     *     operationId="login",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123"),
+     *             @OA\Property(property="remember", type="boolean", example=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful login",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthorized")
+     *         )
+     *     )
+     * )
+     */
     public function login(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
@@ -78,6 +110,25 @@ class AuthController extends Controller
         return response()->json(['token' => $token]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/auth/logout",
+     *     summary="User logout",
+     *     description="Logout the authenticated user by revoking their tokens",
+     *     operationId="logout",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=false
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logged out successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Logged out successfully")
+     *         )
+     *     )
+     * )
+     */
     public function logout(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->user()->tokens()->delete();

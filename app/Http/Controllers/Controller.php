@@ -12,6 +12,7 @@ use Illuminate\Routing\Controller as BaseController;
  *      version="0.0.1",
  *      description="API Budget Buddy",
  *      @OA\Contact(
+ *          name="Andre Markov",
  *          email="andremarkov@icloud.com"
  *      )
  * )
