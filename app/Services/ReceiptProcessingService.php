@@ -32,7 +32,7 @@ class ReceiptProcessingService
 
     private static function validate($response)
     {
-        $defaultStructure = config('api.default_structure');
+        $defaultStructure = config('api.check_processing.default_structure');
 
         if (!is_array($response)) {
             $response = [];

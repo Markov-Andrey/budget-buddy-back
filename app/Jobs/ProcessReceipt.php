@@ -30,7 +30,7 @@ class ProcessReceipt implements ShouldQueue
     {
         // https://github.com/gemini-api-php/laravel
         $filePath = storage_path('app/public/' . $this->receipt->image_path);
-        $prompt = config('api.prompts.check_processing');
+        $prompt = config('api.check_processing.prompt');
         try {
             $response = Gemini::generateTextUsingImageFile(
                 'image/jpeg',
