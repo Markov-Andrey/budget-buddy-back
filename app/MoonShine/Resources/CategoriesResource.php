@@ -7,10 +7,9 @@ namespace App\MoonShine\Resources;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Category;
 
-use MoonShine\Fields\Date;
+use MoonShine\Fields\Relationships\HasMany;
 use MoonShine\Fields\Text;
 use MoonShine\Resources\ModelResource;
-use MoonShine\Decorations\Block;
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Field;
 use MoonShine\Components\MoonShineComponent;
@@ -34,9 +33,11 @@ class CategoriesResource extends ModelResource
         return [
             ID::make()->sortable(),
             Text::make('name', 'name'),
-            Date::make('created_at', 'created_at')
-                ->hideOnForm()
-                ->format('d.m.y H:i'),
+            HasMany::make('subcategories', 'subcategories', resource: new SubcategoriesResource())
+                ->fields([
+                    ID::make(),
+                    Text::make('name', 'name'),
+                ])
         ];
     }
 
