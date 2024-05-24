@@ -9,18 +9,22 @@ class ReceiptsData extends Model
 {
     use HasFactory;
 
-    // Указываем, какие поля могут быть массово назначены
     protected $fillable = [
         'receipts_id',
         'name',
         'quantity',
         'weight',
-        'price'
+        'price',
+        'subcategory_id'
     ];
 
-    // Определяем связь с моделью Receipt
     public function receipt()
     {
         return $this->belongsTo(Receipts::class, 'receipts_id');
+    }
+
+    public function subcategory()
+    {
+        return $this->belongsTo(Subcategory::class, 'subcategory_id');
     }
 }

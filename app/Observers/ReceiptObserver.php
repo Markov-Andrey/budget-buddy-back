@@ -2,7 +2,8 @@
 
 namespace App\Observers;
 
-use App\Jobs\ProcessReceipt;
+use App\Jobs\CategorizeProductsJobs;
+use App\Jobs\ProcessReceiptJobs;
 use App\Models\Receipts;
 
 class ReceiptObserver
@@ -12,7 +13,8 @@ class ReceiptObserver
      */
     public function created(Receipts $receipt): void
     {
-        ProcessReceipt::dispatch($receipt);
+        ProcessReceiptJobs::dispatch($receipt);
+        CategorizeProductsJobs::dispatch($receipt);
     }
 
     /**
@@ -64,7 +66,8 @@ class ReceiptObserver
     public function massInserted(array $receipts)
     {
         foreach ($receipts as $receipt) {
-            ProcessReceipt::dispatch($receipt);
+            ProcessReceiptJobs::dispatch($receipt);
+            CategorizeProductsJobs::dispatch($receipt);
         }
     }
 }

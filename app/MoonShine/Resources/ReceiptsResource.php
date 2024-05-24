@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources;
 
-use App\Jobs\ProcessReceipt;
+use App\Jobs\ProcessReceiptJobs;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Receipts;
 
+use MoonShine\Enums\PageType;
 use MoonShine\Exceptions\FieldException;
 use MoonShine\Fields\Date;
 use MoonShine\Fields\Image;
@@ -27,6 +28,7 @@ class ReceiptsResource extends ModelResource
 {
     protected string $model = Receipts::class;
     protected string $title = 'Чеки в обработке';
+    protected ?PageType $redirectAfterSave = PageType::INDEX;
 
     /**
      * @return list<MoonShineComponent|Field>
@@ -66,6 +68,9 @@ class ReceiptsResource extends ModelResource
                     Text::make('quantity', 'quantity'),
                     Text::make('weight', 'weight'),
                     Text::make('price', 'price'),
+                    BelongsTo::make('subcategory', 'subcategory', resource: new SubcategoriesResource())
+                        ->nullable()
+                        ->searchable(),
                 ])
                 ->hideOnAll()
                 ->showOnDetail(),

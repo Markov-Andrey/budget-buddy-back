@@ -7,6 +7,7 @@ namespace App\MoonShine\Resources;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ReceiptsData;
 
+use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Fields\Text;
 use MoonShine\Resources\ModelResource;
 use MoonShine\Decorations\Block;
@@ -34,6 +35,9 @@ class ReceiptsDataResource extends ModelResource
             Text::make('quantity', 'quantity'),
             Text::make('weight', 'weight'),
             Text::make('price', 'price'),
+            BelongsTo::make('subcategory', 'subcategory', resource: new SubcategoriesResource())
+                ->nullable()
+                ->searchable(),
         ];
     }
 

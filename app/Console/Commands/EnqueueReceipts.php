@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\CategorizeProductsJobs;
 use Illuminate\Console\Command;
 use App\Models\Receipts;
-use App\Jobs\ProcessReceipt;
+use App\Jobs\ProcessReceiptJobs;
 use Illuminate\Support\Facades\DB;
 
 class EnqueueReceipts extends Command
@@ -27,7 +28,8 @@ class EnqueueReceipts extends Command
             $jobInQueue = DB::table('jobs')->where('payload', 'like', '%"receipt_id":' . $receipt->id . '%')->exists();
 
             if (!$jobInQueue) {
-                ProcessReceipt::dispatch($receipt);
+                ProcessReceiptJobs::dispatch($receipt);
+                CategorizeProductsJobs::dispatch($receipt);
                 $this->info('Receipt ID ' . $receipt->id . ' added to the queue.');
             } else {
                 $this->info('Receipt ID ' . $receipt->id . ' is already in the queue.');

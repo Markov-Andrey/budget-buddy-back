@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\ReceiptsData;
-use App\Models\ReceiptsOrganization;
-use App\Services\ReceiptProcessingService;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,3 +12,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/hello', function () {
+    return 'hello';
+});

@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Models\ReceiptsData;
 use App\Models\Receipts;
 use App\Models\ReceiptsOrganization;
-use App\Services\ReceiptProcessingService;
+use App\Services\ApiResponseStabilizeService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,7 +15,7 @@ use GeminiAPI\Laravel\Facades\Gemini;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
-class ProcessReceipt implements ShouldQueue
+class ProcessReceiptJobs implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -38,7 +38,8 @@ class ProcessReceipt implements ShouldQueue
                 $prompt,
             );
             Log::info('API Receipt processing result: ' . $response);
-            $data = ReceiptProcessingService::getInfo($response);
+            $defaultStructure = config('api.check_processing.default_structure');
+            $data = ApiResponseStabilizeService::getInfo($response, $defaultStructure);
 
             if (isset($data['data']['address']) && is_array($data['data']['address'])) {
                 ReceiptsOrganization::create([

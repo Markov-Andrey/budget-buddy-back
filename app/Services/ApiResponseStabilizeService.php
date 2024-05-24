@@ -2,12 +2,17 @@
 
 namespace App\Services;
 
-class ReceiptProcessingService
+class ApiResponseStabilizeService
 {
-    public static function getInfo(string $response)
+    /**
+     * @param string $response - ответ Gemini
+     * @param mixed $defaultStructure - структура JSON для валидации
+     * @return array
+     */
+    public static function getInfo(string $response, mixed $defaultStructure)
     {
         $json = self::toJson($response);
-        $validateJson = self::validate($json);
+        $validateJson = self::validate($json, $defaultStructure);
         $error = self::hasError($validateJson);
 
         return [
@@ -30,10 +35,8 @@ class ReceiptProcessingService
         return null;
     }
 
-    private static function validate($response)
+    private static function validate($response, $defaultStructure)
     {
-        $defaultStructure = config('api.check_processing.default_structure');
-
         if (!is_array($response)) {
             $response = [];
         }
