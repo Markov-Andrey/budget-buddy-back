@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Models\Jobs;
 use App\Models\Receipts;
+use App\MoonShine\Pages\InfoPage;
 use App\MoonShine\Resources\CategoriesResource;
 use App\MoonShine\Resources\GroupMembershipsResource;
 use App\MoonShine\Resources\GroupsResource;
@@ -102,6 +103,10 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                     new SubcategoriesResource()
                 ),
             ]),
+            MenuItem::make(
+                'InfoPage',
+                new InfoPage()
+            ),
         ];
     }
     public function boot(): void
