@@ -37,7 +37,8 @@ class CategorizeProductsJobs implements ShouldQueue
         $id = $this->receipt->id;
         $prompt = config('api.check_subcategories.prompt');
 
-        $subcategories = Subcategory::query()->select('id', 'name')->get();
+        // список субкатегорий для запроса
+        $subcategories = Subcategory::query()->where('is_check', 1)->select('id', 'name')->get();
         $subcategoriesString = "\nСубкатегории: " . $subcategories->pluck('name')->implode(', ');
         $subcategoriesIdArray = $subcategories->pluck('id', 'name')->toArray();
 

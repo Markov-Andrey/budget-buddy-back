@@ -9,6 +9,7 @@ use App\Models\Subcategory;
 
 use MoonShine\Fields\Date;
 use MoonShine\Fields\Relationships\BelongsTo;
+use MoonShine\Fields\Switcher;
 use MoonShine\Fields\Text;
 use MoonShine\Resources\ModelResource;
 use MoonShine\Fields\ID;
@@ -37,6 +38,8 @@ class SubcategoriesResource extends ModelResource
             BelongsTo::make('category_id', 'category', resource: new CategoriesResource())
                 ->searchable()
                 ->nullable(),
+            Switcher::make('is_check', 'is_check')
+                ->updateOnPreview(),
             Date::make('created_at', 'created_at')
                 ->hideOnForm()
                 ->format('d.m.y H:i'),
