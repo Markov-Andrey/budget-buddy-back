@@ -40,25 +40,20 @@ final class InfoBlock extends MoonShineComponent
 
         if ($receipts) {
             foreach ($receipts as $items) {
-                $totalPrice = 0; // Инициализируем переменную для хранения общей стоимости товаров
-
+                $totalPrice = 0;
                 foreach ($items as $item) {
-                    $price = str_replace(',', '.', $item->price); // Заменяем запятые на точки в цене
-                    $quantity = $item->quantity; // Получаем количество товара
-                    // Если и цена, и количество числовые, добавляем стоимость товара к общей стоимости
+                    $price = str_replace(',', '.', $item->price);
+                    $quantity = $item->quantity;
                     if (is_numeric($price) && is_numeric($quantity)) {
                         $totalPrice += $price * $quantity;
                     }
                 }
-
                 $subcategoryName = $items->first()->subcategory->name;
                 $categoryName = $items->first()->subcategory->category->name;
 
-                // Собираем данные для подкатегорий
                 $detailsProducts[$subcategoryName] = $totalPrice;
                 $this->dataTotal += $totalPrice;
 
-                // Собираем данные для категорий
                 if (!isset($detailsCategory[$categoryName])) {
                     $detailsCategory[$categoryName] = 0;
                 }
