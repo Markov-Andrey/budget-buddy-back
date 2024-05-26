@@ -1,14 +1,17 @@
 <div>
     @if($users)
-        <select id="userSelect">
-            <option value="0" {{ $user && $user->id == '0' ? 'selected' : '' }}>-</option>
-            @foreach($users as $item)
-                <option value="{{ $item->id }}" {{ $user && $user->id == $item->id ? 'selected' : '' }}>
-                    {{ $item->name }}
-                </option>
-            @endforeach
-        </select>
+        <x-moonshine::form.select id="userSelect" style="width: 150px;">
+            <x-slot:options>
+                <option value="0" {{ $user && $user->id == '0' ? 'selected' : '' }}>-</option>
+                @foreach($users as $item)
+                    <option value="{{ $item->id }}" {{ $user && $user->id == $item->id ? 'selected' : '' }}>
+                        {{ $item->name }}
+                    </option>
+                @endforeach
+            </x-slot:options>
+        </x-moonshine::form.select>
     @endif
+    <hr>
     @if($user)
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
             <div>
