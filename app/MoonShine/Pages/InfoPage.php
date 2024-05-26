@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\MoonShine\Pages;
 
 use App\MoonShine\Components\InfoBlock;
-use MoonShine\Metrics\DonutChartMetric;
 use MoonShine\Pages\Page;
 use MoonShine\Components\MoonShineComponent;
 

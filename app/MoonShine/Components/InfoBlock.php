@@ -6,10 +6,7 @@ namespace App\MoonShine\Components;
 
 use App\Models\Receipts;
 use App\Models\User;
-use Closure;
-use Illuminate\Contracts\View\View;
 use MoonShine\Components\MoonShineComponent;
-use Illuminate\Http\Request;
 
 /**
  * @method static static make()
