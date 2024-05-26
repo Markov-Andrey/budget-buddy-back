@@ -39,9 +39,8 @@ class Receipts extends Model
         return $this->hasMany(ReceiptsOrganization::class);
     }
 
-    public static function calculatePricesByCategory($userId, $categoryIdentifier = null)
+    public static function calculatePricesByCategory($userId, $categoryIdentifier = null, $sort = true)
     {
-        // Подготовка запроса
         $query = Receipts::with('data.subcategory.category')
             ->where('user_id', $userId);
 
@@ -71,28 +70,36 @@ class Receipts extends Model
                 if (is_numeric($price) && is_numeric($quantity)) {
                     $totalPrice = $price * $quantity;
                     $subcategoryName = $item->subcategory->name;
-                    $categoryName = $item->subcategory->category->name; // Изменено на ->subcategory->category->name
+                    $categoryName = $item->subcategory->category->name;
 
-                    // Если указано имя категории, собираем данные о продуктах
-                    if ($categoryName && $categoryName === $categoryIdentifier) {
-                        $details[$subcategoryName] = $totalPrice;
+                    // Если указано имя категории или ID категории, собираем данные о продуктах
+                    if ($categoryIdentifier !== null) {
+                        if (($categoryIdentifier === $categoryName) || (is_numeric($categoryIdentifier) && $item->subcategory->category->id == $categoryIdentifier)) {
+                            if (!isset($details[$subcategoryName])) {
+                                $details[$subcategoryName] = 0;
+                            }
+                            $details[$subcategoryName] += $totalPrice;
+                            $dataTotal += $totalPrice;
+                        }
                     } else { // Иначе собираем данные о категориях
                         if (!isset($details[$categoryName])) {
                             $details[$categoryName] = 0;
                         }
                         $details[$categoryName] += $totalPrice;
+                        $dataTotal += $totalPrice;
                     }
-
-                    // Обновляем общую сумму
-                    $dataTotal += $totalPrice;
                 }
             }
+        }
+
+        if ($sort) {
+            arsort($details);
         }
 
         // Возвращаем результаты
         return [
             'details' => $details,
-            'dataTotal' => $dataTotal
+            'total' => $dataTotal
         ];
     }
 }

@@ -18,14 +18,14 @@ final class InfoBlock extends MoonShineComponent
     protected mixed $users;
     protected mixed $data;
     protected mixed $categoriesData;
-    protected mixed $dataTotal = 0;
+    private array $subCategoriesData;
 
     public function __construct()
     {
         $id = request('user');
         $this->user = $id ? User::query()->findOrFail($id) : null;
 
-        $this->data = Receipts::calculatePricesByCategory($id, 'Продукты');
+        $this->subCategoriesData = Receipts::calculatePricesByCategory($id, 'Продукты');
         $this->categoriesData = Receipts::calculatePricesByCategory($id);
         $this->users = User::all();
     }
@@ -38,9 +38,8 @@ final class InfoBlock extends MoonShineComponent
         return [
             'users' => $this->users,
             'user' => $this->user,
-            'data' => $this->data['details'],
-            'dataTotal' => $this->data['dataTotal'],
-            'categoriesData' => $this->categoriesData['details'],
+            'categoriesData' => $this->categoriesData,
+            'subCategoriesData' => $this->subCategoriesData,
         ];
     }
 }

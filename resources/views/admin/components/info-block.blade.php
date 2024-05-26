@@ -17,7 +17,7 @@
             <div>
                 {!!
                 MoonShine\Metrics\DonutChartMetric::make('Категории')
-                    ->values($categoriesData)
+                    ->values($categoriesData['details'])
                 !!}
             </div>
             <div>
@@ -27,16 +27,16 @@
                     <td>Цена</td>
                     <td>Доля</td>
                     </thead>
-                    @foreach($categoriesData as $key => $value)
+                    @foreach($categoriesData['details'] as $key => $value)
                         <tr>
                             <td>{{ $key }}</td>
                             <td>{{ number_format($value, 2, '.', '') }}</td>
-                            <td>{{ number_format($value / $dataTotal * 100, 2, '.', '') }}</td>
+                            <td>{{ number_format($value / $categoriesData['total'] * 100, 2, '.', '') }}</td>
                         </tr>
                     @endforeach
                     <tfoot>
                     <td>Всего</td>
-                    <td>{{ $dataTotal }}</td>
+                    <td>{{ $categoriesData['total'] }}</td>
                     <td>100</td>
                     </tfoot>
                 </table>
@@ -47,7 +47,7 @@
             <div>
                 {!!
                 MoonShine\Metrics\DonutChartMetric::make('Продукты')
-                    ->values($data)
+                    ->values($subCategoriesData['details'])
                 !!}
             </div>
             <div>
@@ -57,19 +57,20 @@
                         <td>Цена</td>
                         <td>Доля</td>
                     </thead>
-                @foreach($data as $key => $value)
+                @foreach($subCategoriesData['details'] as $key => $value)
                     <tr>
                         <td>{{ $key }}</td>
                         <td>{{ number_format($value, 2, '.', '') }}</td>
-                        <td>{{ number_format($value / $dataTotal * 100, 2, '.', '') }}</td>
+                        <td>{{ number_format($value / $subCategoriesData['total'] * 100, 2, '.', '') }}</td>
                     </tr>
                 @endforeach
                     <tfoot>
                         <td>Всего</td>
-                        <td>{{ $dataTotal }}</td>
+                        <td>{{ $subCategoriesData['total'] }}</td>
                         <td>100</td>
                     </tfoot>
                 </table>
+                <div>{{$categoriesData['total']. '/' .$subCategoriesData['total']}}</div>
             </div>
         </div>
     @endif
