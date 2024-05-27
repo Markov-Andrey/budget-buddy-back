@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('auto_insurance', function (Blueprint $table) {
+        Schema::create('auto_technical_inspections', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('receipts_data_id')->nullable();
-            $table->date('expiry_date')->nullable();
+            $table->integer('inspection_mileage')->nullable();
             $table->timestamps();
 
             $table->foreign('receipts_data_id')->references('id')->on('receipts_data')->onDelete('cascade');
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('auto_insurance');
+        Schema::dropIfExists('auto_technical_inspections');
     }
 };

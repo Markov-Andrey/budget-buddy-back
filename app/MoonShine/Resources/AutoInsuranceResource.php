@@ -6,25 +6,23 @@ namespace App\MoonShine\Resources;
 
 use App\Models\ReceiptsData;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Auto;
+use App\Models\AutoInsurance;
 
-use MoonShine\Fields\Number;
+use MoonShine\Fields\Date;
 use MoonShine\Fields\Relationships\BelongsTo;
-use MoonShine\Fields\Relationships\MorphToMany;
-use MoonShine\Fields\Text;
 use MoonShine\Resources\ModelResource;
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Field;
 use MoonShine\Components\MoonShineComponent;
 
 /**
- * @extends ModelResource<Auto>
+ * @extends ModelResource<AutoInsurance>
  */
-class AutoResource extends ModelResource
+class AutoInsuranceResource extends ModelResource
 {
-    protected string $model = Auto::class;
+    protected string $model = AutoInsurance::class;
 
-    protected string $title = 'Auto';
+    protected string $title = 'Insurances/Страховка';
 
     /**
      * @return list<MoonShineComponent|Field>
@@ -33,20 +31,15 @@ class AutoResource extends ModelResource
     {
         return [
             ID::make()->sortable(),
-            Text::make('name', 'name'),
-            BelongsTo::make('user', 'user', resource: new UserResource())
+            BelongsTo::make('receiptsData', 'receiptsData', fn($item) => ReceiptsData::formattedData($item), resource: new ReceiptsDataResource())
                 ->nullable()
                 ->searchable(),
-            MorphToMany::make('allReceipts', 'allReceipts', fn($item) => ReceiptsData::formattedData($item))
-                ->hideOnAll()
-                ->showOnDetail()
-                ->showOnUpdate(),
-            Number::make('service_interval', 'service_interval'),
+            Date::make('expiry_date', 'expiry_date'),
         ];
     }
 
     /**
-     * @param Auto $item
+     * @param AutoInsurance $item
      *
      * @return array<string, string[]|string>
      * @see https://laravel.com/docs/validation#available-validation-rules

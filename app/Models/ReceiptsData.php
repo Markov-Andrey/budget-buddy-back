@@ -34,4 +34,14 @@ class ReceiptsData extends Model
     {
         return $this->morphTo();
     }
+
+    public static function formattedData($item) {
+        $name = $item->name ?? '-';
+        $subcategoryName = $item->subcategory ? $item->subcategory->name : '-';
+        $quantity = $item->quantity ?? '-';
+        $price = $item->price ?? '-';
+        $weight = $item->weight ?? '-';
+
+        return "{$name} ({$subcategoryName}) - {$quantity} ({$weight}) - {$price}";
+    }
 }
