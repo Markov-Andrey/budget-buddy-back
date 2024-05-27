@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Pages;
 
-use App\MoonShine\Components\InfoBlock;
-use MoonShine\Pages\Page;
+use App\MoonShine\Components\Info\InfoBlock;
 use MoonShine\Components\MoonShineComponent;
+use MoonShine\Pages\Page;
 
 class InfoPage extends Page
 {

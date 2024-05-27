@@ -13,6 +13,7 @@ use App\MoonShine\Resources\AutoTechnicalInspectionResource;
 use App\MoonShine\Resources\CategoriesResource;
 use App\MoonShine\Resources\GroupMembershipsResource;
 use App\MoonShine\Resources\GroupsResource;
+use App\MoonShine\Resources\IncomeResource;
 use App\MoonShine\Resources\JobsResource;
 use App\MoonShine\Resources\ReceiptsDataResource;
 use App\MoonShine\Resources\ReceiptsOrganizationResource;
@@ -120,6 +121,10 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                     new AutoTechnicalInspectionResource()
                 ),
             ]),
+            MenuItem::make(
+                'Income',
+                new IncomeResource()
+            ),
             MenuItem::make(
                 'InfoPage',
                 new InfoPage()
