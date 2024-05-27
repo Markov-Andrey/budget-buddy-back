@@ -44,6 +44,7 @@ class CategoriesProductTableSeeder extends Seeder
             $subcategories[] = [
                 'name' => $name,
                 'category_id' => $categoryId,
+                'is_check' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

@@ -34,6 +34,7 @@ class CategoriesSpecialTableSeeder extends Seeder
             Subcategory::create([
                 'name' => $name,
                 'category_id' => $category->id,
+                'is_check' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

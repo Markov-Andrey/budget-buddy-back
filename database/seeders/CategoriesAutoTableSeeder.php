@@ -17,15 +17,20 @@ class CategoriesAutoTableSeeder extends Seeder
         $categoryId = $category->id;
 
         $subcategoryNames = [
-            "Бензин, дизель, газ",
-            "Запчасти авто",
+            "Топливо" => 1,
+            "Ремонт" => 0,
+            "Плановое ТО" => 0,
+            "Страховка" => 0,
+            "Расходники" => 0,
+            "Доработки" => 0,
         ];
         $subcategories = [];
 
-        foreach ($subcategoryNames as $name) {
+        foreach ($subcategoryNames as $name => $check) {
             $subcategories[] = [
                 'name' => $name,
                 'category_id' => $categoryId,
+                'is_check' => $check ?? 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
