@@ -34,7 +34,7 @@ class AutoInsuranceResource extends ModelResource
             BelongsTo::make('receiptsData', 'receiptsData', fn($item) => ReceiptsData::formattedData($item), resource: new ReceiptsDataResource())
                 ->nullable()
                 ->searchable(),
-            Date::make('expiry_date', 'expiry_date'),
+            Date::make('expiry_date', 'expiry_date')->format('d.m.Y'),
         ];
     }
 
