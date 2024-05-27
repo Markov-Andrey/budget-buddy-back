@@ -16,21 +16,19 @@
         <div class="flex gap-4">
             <span class="mr-4">
                 <div class="text-sm font-medium">Income:</div>
-                <div class="text-lg font-semibold">{{ $income }}</div>
+                <div style="color:#00b000;" class="text-lg font-semibold">{{ $income }}</div>
             </span>
             <span>
                 <div class="text-sm font-medium">Loss:</div>
-                <div class="text-lg font-semibold">{{ $loss }}</div>
+                <div style="color:#f10000;" class="text-lg font-semibold">{{ $loss }}</div>
             </span>
             <span>
                 <div class="text-sm font-medium">Balance:</div>
-                <div class="text-lg font-semibold">
                     @if($balance > 0)
-                        +{{ number_format($balance, 2) }}
+                        <div style="color:#00b000;" class="text-lg font-semibold">+{{ number_format($balance, 2) }}</div>
                     @else
-                        {{ number_format($balance, 2) }}
+                        <div style="color:#f10000;" class="text-lg font-semibold">{{ number_format($balance, 2) }}</div>
                     @endif
-                </div>
             </span>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">

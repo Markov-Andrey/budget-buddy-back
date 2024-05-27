@@ -39,13 +39,7 @@ class Income extends Model
 
     public static function totalIncomeUser($userId)
     {
-        $incomes = self::where('user_id', $userId)->get();
-        $totalIncome = 0;
-        foreach ($incomes as $income) {
-            $totalIncome += $income->amount;
-        }
-
-        return $totalIncome;
+        return self::query()->where('user_id', $userId)->sum('amount') / 100;
     }
 
     public static function calculateByCategory($userId)
