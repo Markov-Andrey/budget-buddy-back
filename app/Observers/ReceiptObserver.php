@@ -13,8 +13,10 @@ class ReceiptObserver
      */
     public function created(Receipts $receipt): void
     {
-        ProcessReceiptJobs::dispatch($receipt);
-        CategorizeProductsJobs::dispatch($receipt);
+        if ($receipt->image_path) {
+            ProcessReceiptJobs::dispatch($receipt);
+            CategorizeProductsJobs::dispatch($receipt);
+        }
     }
 
     /**
