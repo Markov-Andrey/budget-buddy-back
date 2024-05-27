@@ -37,6 +37,17 @@ class Income extends Model
         return $this->belongsTo(Subcategory::class);
     }
 
+    public static function totalIncomeUser($userId)
+    {
+        $incomes = self::where('user_id', $userId)->get();
+        $totalIncome = 0;
+        foreach ($incomes as $income) {
+            $totalIncome += $income->amount;
+        }
+
+        return $totalIncome;
+    }
+
     public static function calculateByCategory($userId)
     {
         $incomes = self::query()->where('user_id', $userId)->with('subcategory')->get();

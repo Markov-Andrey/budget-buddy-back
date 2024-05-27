@@ -40,6 +40,17 @@ class Receipts extends Model
         return $this->hasMany(ReceiptsOrganization::class);
     }
 
+    public static function totalLossUser($userId)
+    {
+        $incomes = self::where('user_id', $userId)->get();
+        $totalIncome = 0;
+        foreach ($incomes as $income) {
+            $totalIncome += $income->amount;
+        }
+
+        return $totalIncome;
+    }
+
     public function setAmountAttribute($value)
     {
         $this->attributes['amount'] = $value * 100;

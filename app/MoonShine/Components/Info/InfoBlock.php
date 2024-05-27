@@ -22,16 +22,23 @@ final class InfoBlock extends MoonShineComponent
     private array $subCategoriesData;
     private mixed $amountData;
 
+    private mixed $income;
+    private mixed $loss;
+    private mixed $balance;
+
     public function __construct()
     {
         $id = request('user');
         $this->user = $id ? User::query()->findOrFail($id) : null;
+        $this->users = User::all();
 
         $this->subCategoriesData = Receipts::calculatePricesByCategory($id, 'Продукты');
         $this->categoriesData = Receipts::calculatePricesByCategory($id);
-        $this->users = User::all();
-
         $this->amountData = Income::calculateByCategory($id);
+
+        $this->income = number_format(Income::totalIncomeUser($id), 2);
+        $this->loss = number_format(Receipts::totalLossUser($id), 2);
+        $this->balance = number_format($this->income - $this->loss, 2);
     }
 
     /*
@@ -45,6 +52,9 @@ final class InfoBlock extends MoonShineComponent
             'categoriesData' => $this->categoriesData,
             'subCategoriesData' => $this->subCategoriesData,
             'amountData' => $this->amountData,
+            'income' => $this->income,
+            'loss' => $this->loss,
+            'balance' => $this->balance,
         ];
     }
 }

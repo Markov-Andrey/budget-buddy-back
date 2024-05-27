@@ -13,6 +13,26 @@
     @endif
     <hr>
     @if($user)
+        <div class="flex gap-4">
+            <span class="mr-4">
+                <div class="text-sm font-medium">Income:</div>
+                <div class="text-lg font-semibold">{{ $income }}</div>
+            </span>
+            <span>
+                <div class="text-sm font-medium">Loss:</div>
+                <div class="text-lg font-semibold">{{ $loss }}</div>
+            </span>
+            <span>
+                <div class="text-sm font-medium">Balance:</div>
+                <div class="text-lg font-semibold">
+                    @if($balance > 0)
+                        +{{ number_format($balance, 2) }}
+                    @else
+                        {{ number_format($balance, 2) }}
+                    @endif
+                </div>
+            </span>
+        </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
             <div>
                 {!!
