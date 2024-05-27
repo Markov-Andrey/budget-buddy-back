@@ -67,4 +67,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(GroupMemberships::class);
     }
+
+    public function allAuto()
+    {
+        return $this->hasMany(Auto::class);
+    }
 }

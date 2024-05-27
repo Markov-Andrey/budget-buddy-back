@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\Jobs;
 use App\Models\Receipts;
 use App\MoonShine\Pages\InfoPage;
+use App\MoonShine\Resources\AutoResource;
 use App\MoonShine\Resources\CategoriesResource;
 use App\MoonShine\Resources\GroupMembershipsResource;
 use App\MoonShine\Resources\GroupsResource;
@@ -101,6 +102,12 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                 MenuItem::make(
                     'Subcategories',
                     new SubcategoriesResource()
+                ),
+            ]),
+            MenuGroup::make('Auto', [
+                MenuItem::make(
+                    'Auto',
+                    new AutoResource()
                 ),
             ]),
             MenuItem::make(

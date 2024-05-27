@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources;
 
+use App\Models\Auto;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ReceiptsData;
 
 use MoonShine\Fields\Relationships\BelongsTo;
+use MoonShine\Fields\Relationships\MorphTo;
 use MoonShine\Fields\Text;
 use MoonShine\Resources\ModelResource;
-use MoonShine\Decorations\Block;
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Field;
 use MoonShine\Components\MoonShineComponent;
@@ -23,6 +24,8 @@ class ReceiptsDataResource extends ModelResource
     protected string $model = ReceiptsData::class;
 
     protected string $title = 'ReceiptsData';
+
+    protected string $column = 'name';
 
     /**
      * @return list<MoonShineComponent|Field>
@@ -37,6 +40,11 @@ class ReceiptsDataResource extends ModelResource
             Text::make('weight', 'weight'),
             Text::make('price', 'price'),
             BelongsTo::make('subcategory', 'subcategory', resource: new SubcategoriesResource())
+                ->nullable()
+                ->searchable(),
+            MorphTo::make('morph')->types([
+                Auto::class => 'name',
+            ])
                 ->nullable()
                 ->searchable(),
         ];

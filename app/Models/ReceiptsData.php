@@ -15,7 +15,9 @@ class ReceiptsData extends Model
         'quantity',
         'weight',
         'price',
-        'subcategory_id'
+        'subcategory_id',
+        'morph_id',
+        'morph_type',
     ];
 
     public function receipt()
@@ -26,5 +28,10 @@ class ReceiptsData extends Model
     public function subcategory()
     {
         return $this->belongsTo(Subcategory::class, 'subcategory_id');
+    }
+
+    public function morph()
+    {
+        return $this->morphTo();
     }
 }
