@@ -12,6 +12,7 @@ use MoonShine\Enums\PageType;
 use MoonShine\Exceptions\FieldException;
 use MoonShine\Fields\Date;
 use MoonShine\Fields\Image;
+use MoonShine\Fields\Number;
 use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Fields\Relationships\HasMany;
 use MoonShine\Fields\Switcher;
@@ -48,6 +49,8 @@ class ReceiptsResource extends ModelResource
             Switcher::make('annulled', 'annulled')
                 ->hideOnCreate()
                 ->updateOnPreview(),
+            Number::make('amount', 'amount')
+                ->hideOnForm(),
             Date::make('datetime', 'datetime')
                 ->withTime()
                 ->format('d.m.y H:i'),

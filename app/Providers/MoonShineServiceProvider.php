@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Models\Jobs;
 use App\Models\Receipts;
+use App\Models\ReceiptsData;
 use App\MoonShine\Pages\InfoPage;
 use App\MoonShine\Resources\AutoInsuranceResource;
 use App\MoonShine\Resources\AutoResource;
@@ -20,6 +21,7 @@ use App\MoonShine\Resources\ReceiptsOrganizationResource;
 use App\MoonShine\Resources\ReceiptsResource;
 use App\MoonShine\Resources\SubcategoriesResource;
 use App\MoonShine\Resources\UserResource;
+use App\Observers\ReceiptDataObserver;
 use App\Observers\ReceiptObserver;
 use MoonShine\Providers\MoonShineApplicationServiceProvider;
 use MoonShine\Menu\MenuGroup;
@@ -135,6 +137,7 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
     {
         parent::boot();
         Receipts::observe(ReceiptObserver::class);
+        ReceiptsData::observe(ReceiptDataObserver::class);
     }
 
     /**

@@ -5,9 +5,11 @@ namespace App\Observers;
 use App\Jobs\CategorizeProductsJobs;
 use App\Jobs\ProcessReceiptJobs;
 use App\Models\Receipts;
+use App\Traits\UpdatesTotalAmountTrait;
 
 class ReceiptObserver
 {
+    use UpdatesTotalAmountTrait;
     /**
      * Handle the Receipt "created" event.
      */
@@ -17,6 +19,7 @@ class ReceiptObserver
             ProcessReceiptJobs::dispatch($receipt);
             CategorizeProductsJobs::dispatch($receipt);
         }
+        $this->updateTotalAmount($receipt);
     }
 
     /**
@@ -24,7 +27,7 @@ class ReceiptObserver
      */
     public function updated(Receipts $receipt): void
     {
-        //
+        $this->updateTotalAmount($receipt);
     }
 
     /**

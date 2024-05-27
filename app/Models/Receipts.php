@@ -15,6 +15,7 @@ class Receipts extends Model
         'processed',
         'error',
         'annulled',
+        'amount',
         'datetime',
     ];
 
@@ -37,6 +38,16 @@ class Receipts extends Model
     public function address()
     {
         return $this->hasMany(ReceiptsOrganization::class);
+    }
+
+    public function setAmountAttribute($value)
+    {
+        $this->attributes['amount'] = $value * 100;
+    }
+
+    public function getAmountAttribute($value)
+    {
+        return $value / 100;
     }
 
     public static function calculatePricesByCategory($userId, $categoryIdentifier = null, $sort = true)
