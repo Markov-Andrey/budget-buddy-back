@@ -22,9 +22,11 @@ Route::prefix('auth')->group(function () {
     Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
 });
 
+
 Route::get('hello', function () {
     return response()->json(['message' => 'Hello!']);
 });
 Route::prefix('receipts')->group(function () {
     Route::post('/add', [ReceiptsController::class, 'store'])->middleware('auth:sanctum');
+    Route::post('/show', [ReceiptsController::class, 'show'])->middleware('auth:sanctum');
 });

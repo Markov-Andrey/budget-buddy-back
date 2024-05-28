@@ -76,4 +76,14 @@ class ReceiptsController extends Controller
 
         return response()->json(['message' => 'No receipt uploaded'], 400);
     }
+
+    public function show(Request $request)
+    {
+        $user = Auth::user();
+        $receipts = Receipts::with('data')
+            ->where('user_id', $user->id)
+            ->paginate(25);
+
+        return response()->json($receipts);
+    }
 }
