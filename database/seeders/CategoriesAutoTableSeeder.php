@@ -18,7 +18,7 @@ class CategoriesAutoTableSeeder extends Seeder
 
         $subcategoryNames = [
             "Топливо" => 1,
-            "Ремонт" => 0,
+            "Ремонт авто" => 0,
             "Плановое ТО" => 0,
             "Страховка" => 0,
             "Расходники" => 0,
