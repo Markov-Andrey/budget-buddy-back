@@ -127,65 +127,40 @@ class Receipts extends Model
 
     public static function calculatePricesByCategory($userId, $categoryIdentifier = null, $sort = true)
     {
-        $query = Receipts::with('data.subcategory.category')
-            ->where('user_id', $userId);
+        $query = ReceiptsData::query()
+            ->join('receipts', 'receipts.id', '=', 'receipts_data.receipts_id')
+            ->join('subcategories', 'receipts_data.subcategory_id', '=', 'subcategories.id')
+            ->join('categories', 'subcategories.category_id', '=', 'categories.id')
+            ->selectRaw('categories.name AS category_name, SUM(receipts_data.price * receipts_data.quantity) AS total_price')
+            ->where('receipts.user_id', $userId)
+            ->groupBy('categories.name');
 
         // Если задан идентификатор категории, фильтруем по нему
         if ($categoryIdentifier !== null) {
-            $query->whereHas('data.subcategory.category', function ($query) use ($categoryIdentifier) {
-                if (is_numeric($categoryIdentifier)) {
-                    $query->where('id', $categoryIdentifier);
-                } else {
-                    $query->where('name', $categoryIdentifier);
-                }
-            });
-        }
-
-        // Получение данных
-        $receipts = $query->first();
-
-        // Инициализация массива для результатов
-        $details = [];
-        $dataTotal = 0;
-
-        // Обработка данных
-        if ($receipts) {
-            foreach ($receipts->data as $item) {
-                $price = str_replace(',', '.', $item->price);
-                $quantity = $item->quantity;
-                if (is_numeric($price) && is_numeric($quantity)) {
-                    $totalPrice = $price * $quantity;
-                    $subcategoryName = $item->subcategory->name;
-                    $categoryName = $item->subcategory->category->name;
-
-                    // Если указано имя категории или ID категории, собираем данные о продуктах
-                    if ($categoryIdentifier !== null) {
-                        if (($categoryIdentifier === $categoryName) || (is_numeric($categoryIdentifier) && $item->subcategory->category->id == $categoryIdentifier)) {
-                            if (!isset($details[$subcategoryName])) {
-                                $details[$subcategoryName] = 0;
-                            }
-                            $details[$subcategoryName] += $totalPrice;
-                            $dataTotal += $totalPrice;
-                        }
-                    } else { // Иначе собираем данные о категориях
-                        if (!isset($details[$categoryName])) {
-                            $details[$categoryName] = 0;
-                        }
-                        $details[$categoryName] += $totalPrice;
-                        $dataTotal += $totalPrice;
-                    }
-                }
+            if (is_numeric($categoryIdentifier)) {
+                $query->where('categories.id', $categoryIdentifier);
+            } else {
+                $query->where('categories.name', $categoryIdentifier);
             }
         }
 
-        if ($sort) {
-            arsort($details);
+        // Получение данных
+        $details = $query->get()->toArray();
+
+        // Преобразование формата данных
+        $formattedDetails = [];
+        foreach ($details as $detail) {
+            $formattedDetails[$detail['category_name']] = $detail['total_price'];
         }
 
-        // Возвращаем результаты
+        // Сортировка, если требуется
+        if ($sort) {
+            arsort($formattedDetails);
+        }
+
         return [
-            'details' => $details,
-            'total' => $dataTotal
+            'details' => $formattedDetails,
+            'total' => array_sum($formattedDetails)
         ];
     }
 }
