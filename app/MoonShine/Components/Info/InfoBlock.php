@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Components\Info;
 
+use App\Models\Auto;
 use App\Models\Income;
 use App\Models\Receipts;
 use App\Models\User;
@@ -25,6 +26,7 @@ final class InfoBlock extends MoonShineComponent
     private mixed $income;
     private mixed $loss;
     private mixed $balance;
+    private mixed $autoData;
 
     public function __construct()
     {
@@ -39,6 +41,8 @@ final class InfoBlock extends MoonShineComponent
         $this->income = number_format(Income::totalIncomeUser($id), 2);
         $this->loss = number_format(Receipts::totalLossUser($id), 2);
         $this->balance = number_format($this->income - $this->loss, 2);
+
+        $this->autoData = Auto::getAutoDataByUserId($id);
     }
 
     /*
@@ -55,6 +59,7 @@ final class InfoBlock extends MoonShineComponent
             'income' => $this->income,
             'loss' => $this->loss,
             'balance' => $this->balance,
+            'autoData' => $this->autoData,
         ];
     }
 }

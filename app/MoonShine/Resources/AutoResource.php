@@ -37,10 +37,6 @@ class AutoResource extends ModelResource
             BelongsTo::make('user', 'user', resource: new UserResource())
                 ->nullable()
                 ->searchable(),
-            MorphToMany::make('allReceipts', 'allReceipts', fn($item) => ReceiptsData::formattedData($item))
-                ->hideOnAll()
-                ->showOnDetail()
-                ->showOnUpdate(),
             Number::make('service_interval', 'service_interval'),
         ];
     }

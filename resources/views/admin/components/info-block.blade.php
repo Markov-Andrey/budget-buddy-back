@@ -13,6 +13,28 @@
     @endif
     <hr>
     @if($user)
+        <div>
+            @if (!empty($autoData))
+                <div class="font-bold">Авто-Блок</div>
+                @foreach ($autoData as $car)
+                    <div style="margin-bottom: 20px;">
+                        <h2>{{ $car['car_name'] }}</h2>
+                        @if($car['average_consumption'] && $car['date_difference'])
+                            <p>Средний расход топлива: {{ number_format($car['average_consumption'], 2) }} л/сут (показатель за последние {{ $car['date_difference'] }} сут.)</p>
+                        @else
+                            <p>Средний расход топлива: мало данных</p>
+
+                        @endif
+                        <h3>Заправки:</h3>
+                            @foreach ($car['receipts'] as $receipt)
+                                <div>{{ $receipt['fuel_name'] }} - {{ $receipt['weight'] }} л. ({{ $receipt['datetime'] }})</div>
+                            @endforeach
+                    </div>
+                @endforeach
+            @else
+                <p>Нет данных о машинах.</p>
+            @endif
+        </div>
         <div class="flex gap-4">
             <span class="mr-4">
                 <div class="text-sm font-medium">Income:</div>
