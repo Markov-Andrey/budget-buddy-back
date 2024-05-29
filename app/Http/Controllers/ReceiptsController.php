@@ -80,7 +80,7 @@ class ReceiptsController extends Controller
     public function show(Request $request)
     {
         $user = Auth::user();
-        $receipts = Receipts::with('data')
+        $receipts = Receipts::with('data', 'data.subcategory')
             ->where('user_id', $user->id)
             ->paginate(25);
 
