@@ -7,6 +7,7 @@ use App\Models\Receipts;
 use App\Models\ReceiptsOrganization;
 use App\Services\ApiResponseStabilizeService;
 use DateTime;
+use DateTimeZone;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -41,8 +42,22 @@ class ProcessReceiptJobs implements ShouldQueue
             Log::info('API Receipt processing result: ' . $response);
             $defaultStructure = config('api.check_processing.default_structure');
             $data = ApiResponseStabilizeService::getInfo($response, $defaultStructure);
-            $datetimeString = $data['data']['datetime'] ?? null;
-            $datetime = DateTime::createFromFormat('Y-m-d H:i', $datetimeString);
+            $datetimeString = $data['data']['datetime'];
+            $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $datetimeString);
+
+            // Если дата не соответствует формату, используем текущее время
+            if ($datetime === false) {
+                Log::warning("Неверный формат даты '$datetimeString'. Используется текущее время.");
+                $datetime = new DateTime('now', new DateTimeZone('UTC'));
+            }
+
+            if (isset($data['data']['datetime'])) {
+                $receipt = Receipts::query()->find($this->receipt->id);
+                if ($receipt) {
+                    $receipt->datetime = $datetime->format('Y-m-d H:i:s');
+                    $receipt->save();
+                }
+            }
 
             if (isset($data['data']['address']) && is_array($data['data']['address'])) {
                 ReceiptsOrganization::create([
@@ -51,25 +66,23 @@ class ProcessReceiptJobs implements ShouldQueue
                     'city' => $data['data']['address']['city'] ?? null,
                     'street' => $data['data']['address']['street'] ?? null,
                     'entrance' => $data['data']['address']['entrance'] ?? null,
-                    'datetime' => $datetime->format('Y-m-d H:i:s') ?? null,
                 ]);
             }
+
             if (isset($data['data']['items']) && is_array($data['data']['items'])) {
                 foreach ($data['data']['items'] as $item) {
-                    if (isset($item)) {
-                        ReceiptsData::create([
-                            'receipts_id' => $this->receipt->id,
-                            'name' => $item['name'] ?? null,
-                            'quantity' => $item['quantity'] ?? null,
-                            'weight' => $item['weight'] ?? null,
-                            'price' => $item['price'] ?? null,
-                        ]);
-                    }
+                    ReceiptsData::create([
+                        'receipts_id' => $this->receipt->id,
+                        'name' => $item['name'] ?? null,
+                        'quantity' => $item['quantity'] ?? null,
+                        'weight' => $item['weight'] ?? null,
+                        'price' => $item['price'] ?? null,
+                    ]);
                 }
             }
 
             $this->receipt->processed = true;
-            $this->receipt->error = $data['error'];
+            $this->receipt->error = $data['error'] ?? false;
             $this->receipt->save();
         } catch (Exception $e) {
             logger('API Error processing receipt: ' . $e->getMessage());

@@ -43,6 +43,12 @@ class CategorizeProductsJobs implements ShouldQueue
         $subcategoriesIdArray = $subcategories->pluck('id', 'name')->toArray();
 
         $products = Receipts::with('data')->find($id);
+
+        if ($products === null || $products->data->isEmpty()) {
+            Log::warning('Чек с ID ' . $id . ' не содержит данных для анализа.');
+            return;
+        }
+
         $productsString = "\nПродукты для анализа: " . $products->data->pluck('name')->implode(', ');
         $productsArray = $products->data->pluck('id', 'name')->toArray();
 
