@@ -5,6 +5,76 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @OA\Schema(
+ *      schema="Receipt",
+ *      title="Receipt",
+ *      description="Receipt object",
+ *      @OA\Property(
+ *          property="id",
+ *          description="ID of the receipt",
+ *          type="integer",
+ *          example=1
+ *      ),
+ *      @OA\Property(
+ *          property="image_path",
+ *          description="Path to the image of the receipt",
+ *          type="string",
+ *          example="/path/to/image.jpg"
+ *      ),
+ *      @OA\Property(
+ *          property="user_id",
+ *          description="ID of the user who uploaded the receipt",
+ *          type="integer",
+ *          example=1
+ *      ),
+ *      @OA\Property(
+ *          property="processed",
+ *          description="Flag indicating whether the receipt has been processed",
+ *          type="boolean",
+ *          example=true
+ *      ),
+ *      @OA\Property(
+ *          property="error",
+ *          description="Flag indicating whether an error occurred during processing",
+ *          type="boolean",
+ *          example=false
+ *      ),
+ *      @OA\Property(
+ *          property="annulled",
+ *          description="Flag indicating whether the receipt has been annulled",
+ *          type="boolean",
+ *          example=false
+ *      ),
+ *      @OA\Property(
+ *          property="amount",
+ *          description="Amount of the receipt",
+ *          type="number",
+ *          example=100.50
+ *      ),
+ *      @OA\Property(
+ *          property="datetime",
+ *          description="Date and time when the receipt was created",
+ *          type="string",
+ *          format="date-time",
+ *          example="2024-05-30T12:00:00Z"
+ *      ),
+ *      @OA\Property(
+ *          property="created_at",
+ *          description="Date and time when the receipt was created",
+ *          type="string",
+ *          format="date-time",
+ *          example="2024-05-30T12:00:00Z"
+ *      ),
+ *      @OA\Property(
+ *          property="updated_at",
+ *          description="Date and time when the receipt was last updated",
+ *          type="string",
+ *          format="date-time",
+ *          example="2024-05-30T12:00:00Z"
+ *      )
+ * )
+ */
 class Receipts extends Model
 {
     use HasFactory;
