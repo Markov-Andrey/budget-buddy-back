@@ -31,6 +31,7 @@ Route::get('hello', function () {
 Route::prefix('receipts')->group(function () {
     Route::post('/add', [ReceiptsController::class, 'store'])->middleware('auth:sanctum');
     Route::post('/show', [ReceiptsController::class, 'show'])->middleware('auth:sanctum');
+    Route::delete('/delete/{id}', [ReceiptsController::class, 'delete'])->middleware('auth:sanctum');
 });
 
 Route::prefix('info')->group(function () {

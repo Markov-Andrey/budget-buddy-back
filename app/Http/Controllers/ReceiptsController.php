@@ -87,4 +87,18 @@ class ReceiptsController extends Controller
 
         return response()->json($receipts);
     }
+
+    public function delete($id)
+    {
+        $receipt = Receipts::where('id', $id)
+            ->first();
+
+        if (!$receipt) {
+            return response()->json(['error' => 'Receipt not found or does not belong to the current user'], 404);
+        }
+
+        $receipt->delete();
+
+        return response()->json(['message' => 'Receipt deleted successfully'], 200);
+    }
 }
