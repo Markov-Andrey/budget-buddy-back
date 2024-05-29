@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ReceiptsController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,7 +27,13 @@ Route::prefix('auth')->group(function () {
 Route::get('hello', function () {
     return response()->json(['message' => 'Hello!']);
 });
+
 Route::prefix('receipts')->group(function () {
     Route::post('/add', [ReceiptsController::class, 'store'])->middleware('auth:sanctum');
     Route::post('/show', [ReceiptsController::class, 'show'])->middleware('auth:sanctum');
+    Route::delete('/delete/{id}', [ReceiptsController::class, 'delete'])->middleware('auth:sanctum');
+});
+
+Route::prefix('info')->group(function () {
+    Route::get('/balance', [InfoController::class, 'balance'])->middleware('auth:sanctum');
 });

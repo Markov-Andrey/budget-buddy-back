@@ -202,6 +202,63 @@
                 }
             }
         },
+        "/api/info/balance": {
+            "get": {
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Получить информацию о балансе пользователя",
+                "description": "Этот эндпоинт позволяет получить информацию о балансе пользователя, включая доход, расход и текущий баланс.",
+                "operationId": "getBalanceInfo",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "income": {
+                                            "type": "number",
+                                            "example": "1000.00"
+                                        },
+                                        "loss": {
+                                            "type": "number",
+                                            "example": "500.00"
+                                        },
+                                        "balance": {
+                                            "type": "number",
+                                            "example": "500.00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/receipts/add": {
             "post": {
                 "tags": [
@@ -273,10 +330,217 @@
                     }
                 ]
             }
+        },
+        "/api/receipts/show": {
+            "post": {
+                "tags": [
+                    "Receipts"
+                ],
+                "summary": "Получить список чеков пользователя",
+                "description": "Этот эндпоинт возвращает список чеков пользователя.",
+                "operationId": "getReceipts",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Receipt"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": "string"
+                                        },
+                                        "from": {
+                                            "type": "integer"
+                                        },
+                                        "last_page": {
+                                            "type": "integer"
+                                        },
+                                        "last_page_url": {
+                                            "type": "string"
+                                        },
+                                        "next_page_url": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "per_page": {
+                                            "type": "integer"
+                                        },
+                                        "prev_page_url": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "to": {
+                                            "type": "integer"
+                                        },
+                                        "total": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/receipts/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Receipts"
+                ],
+                "summary": "Удалить чек",
+                "description": "Этот эндпоинт позволяет удалить чек пользователя по его ID.",
+                "operationId": "deleteReceipt",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID чека для удаления",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Receipt deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Чек не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Receipt not found or does not belong to the current user"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
         "schemas": {
+            "Receipt": {
+                "title": "Receipt",
+                "description": "Receipt object",
+                "properties": {
+                    "id": {
+                        "description": "ID of the receipt",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "image_path": {
+                        "description": "Path to the image of the receipt",
+                        "type": "string",
+                        "example": "/path/to/image.jpg"
+                    },
+                    "user_id": {
+                        "description": "ID of the user who uploaded the receipt",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "processed": {
+                        "description": "Flag indicating whether the receipt has been processed",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "error": {
+                        "description": "Flag indicating whether an error occurred during processing",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "annulled": {
+                        "description": "Flag indicating whether the receipt has been annulled",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "amount": {
+                        "description": "Amount of the receipt",
+                        "type": "number",
+                        "example": 100.5
+                    },
+                    "datetime": {
+                        "description": "Date and time when the receipt was created",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-30T12:00:00Z"
+                    },
+                    "created_at": {
+                        "description": "Date and time when the receipt was created",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-30T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Date and time when the receipt was last updated",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-30T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
             "User": {
                 "title": "User",
                 "description": "User object",

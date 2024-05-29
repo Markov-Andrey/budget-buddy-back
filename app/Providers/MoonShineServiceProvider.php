@@ -66,12 +66,12 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                    static fn() => __('moonshine::ui.resource.role_title'),
                    new MoonShineUserRoleResource()
                ),
+            ]),
+            MenuGroup::make('Чеки', [
                 MenuItem::make(
                     'Worker',
                     new JobsResource()
                 )->badge(fn() => Jobs::query()->count()),
-            ]),
-            MenuGroup::make('Чеки', [
                 MenuItem::make(
                     'Чеки в обработке',
                     new ReceiptsResource()
