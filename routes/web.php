@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,23 +16,51 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/hello', function () {
-    $datetimeString = "2023-05-29 08:30:36";
-    $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $datetimeString);
+    $token = env('DISCORD_API_BOT_TOKEN');
+    $client = new Client([
+        'headers' => [
+            'Authorization' => 'Bot ' . $token,
+        ],
+    ]);
+    $emojiView = '👍';
 
-    // Проверка, удалось ли преобразовать строку в объект DateTime
-    if ($datetime === false) {
-        // Если не удалось, используем текущее время
-        $datetime = new DateTime('now', new DateTimeZone('UTC'));
+    $response = $client->get('https://discord.com/api/v10/channels/1245678879151095861/messages');
+    $messages = json_decode($response->getBody(), true);
+    $messagesWithNoReaction = [];
+
+    if (!empty($messages)) {
+        foreach ($messages as $message) {
+            $messageId = $message['id'];
+            $hasThumbsUpReaction = false;
+
+            // Проверяем, есть ли реакции у сообщения
+            if (isset($message['reactions'])) {
+                foreach ($message['reactions'] as $reaction) {
+                    if ($reaction['me'] === true && $reaction['emoji']['name'] === $emojiView) {
+                        $hasThumbsUpReaction = true;
+                        break;
+                    }
+                }
+            }
+
+            // Если реакции "👍" нет, добавляем ее
+            if (!$hasThumbsUpReaction) {
+                $putResponse = $client->put("https://discord.com/api/v10/channels/1245678879151095861/messages/{$messageId}/reactions/{$emojiView}/@me");
+
+                if ($putResponse->getStatusCode() == 204) {
+                    $message['reaction_added'] = true;
+                } else {
+                    $message['reaction_added'] = false;
+                }
+
+                $messagesWithNoReaction[] = $message;
+            }
+        }
     }
 
-    // Преобразование в UNIX-время
-    $unixTimestamp = $datetime->getTimestamp();
-
-    // Выводим результат
-    dd($datetime);
-
-    return 'hello';
+    return dd($messagesWithNoReaction);
 });
+
 Route::get('/', function () {
     return redirect('/admin'); // базовый рероут
 });
