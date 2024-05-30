@@ -14,9 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/hello', function () {
-    $items = (new App\Http\Controllers\DiscordController)->index();
-
-    return dd($items);
+    return 'hello';
 });
 
 Route::get('/', function () {
