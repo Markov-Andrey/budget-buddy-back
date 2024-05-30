@@ -12,7 +12,6 @@ use MoonShine\Fields\Password;
 use MoonShine\Fields\Relationships\HasOne;
 use MoonShine\Fields\Text;
 use MoonShine\Resources\ModelResource;
-use MoonShine\Decorations\Block;
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Field;
 use MoonShine\Components\MoonShineComponent;
