@@ -44,7 +44,7 @@ class DiscordController extends Controller
                 if (!$hasThumbsUpReaction) {
                     $this->addThumbsUpReaction($message);
                     $messagesWithNoReaction[] = $message;
-                    $lastId = $message->id;
+                    $lastId = $message['id'];
                 }
             }
         }
