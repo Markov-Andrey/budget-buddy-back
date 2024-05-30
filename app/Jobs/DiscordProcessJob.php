@@ -38,7 +38,7 @@ class DiscordProcessJob implements ShouldQueue
 
                 if ($item['attachments']) {
                     foreach ($item['attachments'] as $attachment) {
-                        // Извлечение имени файла и расширения с помощью регулярного выражения
+                        // Извлечение имени файла и расширения с помощью регулярного выражения, очистка от параметров
                         if (preg_match('/\/([^\/?#]+)\.(png|jpe?g|gif)(?:$|\?|#)/i', $attachment['proxy_url'], $matches)) {
                             $originalFileName = $matches[1];
                             $extension = $matches[2];

@@ -29,7 +29,9 @@ class DiscordController extends Controller
 
     private function getMessagesWithNoReaction(): array
     {
-        $response = $this->client->get($this->urlApi . 'channels/' . $this->channelId . '/messages');
+        $messageId = null;
+        $after = $messageId ? '?after={message_id}' : null;
+        $response = $this->client->get($this->urlApi . 'channels/' . $this->channelId . '/messages' . $after);
         $messages = json_decode($response->getBody(), true);
         $messagesWithNoReaction = [];
 
