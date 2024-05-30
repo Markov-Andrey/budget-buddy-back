@@ -34,7 +34,7 @@ final class InfoBlock extends MoonShineComponent
         $this->user = $id ? User::query()->findOrFail($id) : null;
         $this->users = User::all();
 
-        $this->subCategoriesData = Receipts::calculatePricesByCategory($id, 'Продукты');
+        $this->subCategoriesData = Receipts::calculatePricesBySubcategory($id, 'Продукты');
         $this->categoriesData = Receipts::calculatePricesByCategory($id);
         $this->amountData = Income::calculateByCategory($id);
 

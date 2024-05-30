@@ -48,7 +48,7 @@ class ProcessReceiptJobs implements ShouldQueue
             // Если дата не соответствует формату, используем текущее время
             if ($datetime === false) {
                 Log::warning("Неверный формат даты '$datetimeString'. Используется текущее время.");
-                $datetime = new DateTime('now', new DateTimeZone('UTC'));
+                $datetime = new DateTime('now');
             }
 
             if (isset($data['data']['datetime'])) {

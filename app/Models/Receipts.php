@@ -158,6 +158,46 @@ class Receipts extends Model
             arsort($formattedDetails);
         }
 
+        // Если задана конкретная категория, собираем данные по субкатегориям
+        if ($categoryIdentifier !== null && !is_numeric($categoryIdentifier)) {
+            $subcategoryDetails = self::calculatePricesBySubcategory($userId, $categoryIdentifier);
+            return [
+                'details' => $subcategoryDetails,
+                'total' => array_sum($subcategoryDetails)
+            ];
+        }
+
+        return [
+            'details' => $formattedDetails,
+            'total' => array_sum($formattedDetails)
+        ];
+    }
+
+    public static function calculatePricesBySubcategory($userId, $categoryName, $sort = true)
+    {
+        $query = ReceiptsData::query()
+            ->join('receipts', 'receipts.id', '=', 'receipts_data.receipts_id')
+            ->join('subcategories', 'receipts_data.subcategory_id', '=', 'subcategories.id')
+            ->join('categories', 'subcategories.category_id', '=', 'categories.id')
+            ->selectRaw('subcategories.name AS subcategory_name, SUM(receipts_data.price * receipts_data.quantity) AS total_price')
+            ->where('receipts.user_id', $userId)
+            ->where('categories.name', $categoryName)
+            ->groupBy('subcategories.name');
+
+        // Получение данных
+        $details = $query->get()->toArray();
+
+        // Преобразование формата данных
+        $formattedDetails = [];
+        foreach ($details as $detail) {
+            $formattedDetails[$detail['subcategory_name']] = $detail['total_price'];
+        }
+
+        // Сортировка, если требуется
+        if ($sort) {
+            arsort($formattedDetails);
+        }
+
         return [
             'details' => $formattedDetails,
             'total' => array_sum($formattedDetails)
