@@ -14,7 +14,6 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "moonshine/moonshine": "^2.13",
-        "nwilging/laravel-discord-bot": "^1.1",
         "zircote/swagger-php": "^4.9"
     },
     "require-dev": {

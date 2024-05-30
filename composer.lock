@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2e1bd5f4e490ed09620881ee64a875fa",
+    "content-hash": "3a7376e46c967af5e09177deed7eb7e7",
     "packages": [
         {
             "name": "api-platform/api-pack",
@@ -4155,61 +4155,6 @@
                 }
             ],
             "time": "2023-02-08T01:06:31+00:00"
-        },
-        {
-            "name": "nwilging/laravel-discord-bot",
-            "version": "1.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nwilging/laravel-discord-bot.git",
-                "reference": "a5ea82b43ae3f4d67a49ca55c3a6c2605d453645"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nwilging/laravel-discord-bot/zipball/a5ea82b43ae3f4d67a49ca55c3a6c2605d453645",
-                "reference": "a5ea82b43ae3f4d67a49ca55c3a6c2605d453645",
-                "shasum": ""
-            },
-            "require": {
-                "ext-sodium": "*",
-                "guzzlehttp/guzzle": "^7.4",
-                "laravel/framework": ">=8",
-                "php": ">=7.4"
-            },
-            "require-dev": {
-                "mockery/mockery": "^1.5",
-                "phpunit/phpunit": "^9.5"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Nwilging\\LaravelDiscordBot\\Providers\\DiscordBotServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Nwilging\\LaravelDiscordBot\\": "src/",
-                    "Nwilging\\LaravelDiscordBotTests\\": "tests/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nick Wilging",
-                    "email": "nick@epautomotive.org"
-                }
-            ],
-            "description": "A robust Discord messaging integration for Laravel",
-            "support": {
-                "issues": "https://github.com/nwilging/laravel-discord-bot/issues",
-                "source": "https://github.com/nwilging/laravel-discord-bot/tree/1.1.1"
-            },
-            "time": "2023-04-18T21:36:21+00:00"
         },
         {
             "name": "openspout/openspout",
