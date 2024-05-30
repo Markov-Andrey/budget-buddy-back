@@ -37,6 +37,7 @@ class UserResource extends ModelResource
             Text::make('name', 'name'),
             Email::make('email', 'email'),
             Password::make('password', 'password'),
+            Text::make('discord_name', 'discord_name'),
             HasOne::make('currentGroup', 'currentGroup', resource: new GroupMembershipsResource())
                 ->fields([
                     Text::make('group', 'group', fn($item) => $item->group->title),

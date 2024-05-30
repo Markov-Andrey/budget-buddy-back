@@ -17,6 +17,7 @@ use Laravel\Sanctum\HasApiTokens;
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="name", type="string", example="John Doe"),
  *     @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+ *     @OA\Property(property="discord_name", type="string", format="string", example="DiscordName"),
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  *     @OA\Property(property="updated_at", type="string", format="date-time")
  * )
@@ -34,6 +35,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'discord_name',
     ];
 
     /**

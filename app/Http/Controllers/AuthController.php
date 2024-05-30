@@ -21,6 +21,7 @@ class AuthController extends Controller
      *             required={"name","email","password"},
      *             @OA\Property(property="name", type="string", example="Swagger API", description="User's name"),
      *             @OA\Property(property="email", type="string", format="email", example="swagger@example.com", description="User's email"),
+     *             @OA\Property(property="discord_name", type="string", format="string", example="DiscordName", description="Global name in discord"),
      *             @OA\Property(property="password", type="string", format="password", example="password", description="User's password (min: 8 characters)")
      *         )
      *     ),
