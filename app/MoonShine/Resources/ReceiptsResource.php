@@ -49,8 +49,7 @@ class ReceiptsResource extends ModelResource
             Switcher::make('annulled', 'annulled')
                 ->hideOnCreate()
                 ->updateOnPreview(),
-            Number::make('amount', 'amount')
-                ->hideOnForm(),
+            Number::make('amount', 'amount')->step(0.01),
             Date::make('datetime', 'datetime')
                 ->withTime()
                 ->format('d.m.y H:i'),
