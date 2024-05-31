@@ -37,52 +37,92 @@ class Auto extends Model
 
         $autoData = [];
         foreach ($auto as $car) {
-            $totalFuel = 0;
-            $totalDays = 0;
-            $previousReceipt = null;
-            $receipts = [];
-            foreach ($car['all_receipts'] as $receipt) {
-                if (isset($receipt['receipt']) && isset($receipt['subcategory'])) {
-                    $receipts[] = [
-                        'datetime' => $receipt['receipt']['datetime'],
-                        'subcategory' => $receipt['subcategory']['name'],
-                        'weight' => $receipt['weight'],
-                        'fuel_name' => $receipt['name'],
-                    ];
-                }
-                if ($previousReceipt) {
-                    $daysDifference = strtotime($receipt['receipt']['datetime']) - strtotime($previousReceipt['receipt']['datetime']);
-                    if ($daysDifference > 0) {
-                        $daysDifference = floor($daysDifference / (60 * 60 * 24)); // Количество дней между заправками
-                        $totalFuel += $receipt['weight']; // Суммируем общее количество топлива
-                        $totalDays += $daysDifference; // Суммируем общее количество дней
-                    }
-                }
-                $previousReceipt = $receipt;
-            }
-            // Вычисляем средний расход для данного автомобиля
-            $averageConsumption = $totalDays > 0 ? $totalFuel / $totalDays : 0;
-
-            // Вычисляем разницу в днях между первой и последней заправками
-            $firstDate = isset($car['all_receipts'][0]['receipt']['datetime']) ? $car['all_receipts'][0]['receipt']['datetime'] : null;
-            $lastDate = isset($receipt['receipt']['datetime']) ? $receipt['receipt']['datetime'] : null;
-            $dateDifference = 0;
-            if ($firstDate && $lastDate) {
-                $firstDateCarbon = Carbon::parse($firstDate);
-                $lastDateCarbon = Carbon::parse($lastDate);
-                $dateDifference = $firstDateCarbon->diffInDays($lastDateCarbon);
-            }
+            $receiptFuel = self::getReceiptFuel($car['all_receipts']);
+            $receiptInsurances = self::getReceiptInsurances($car['all_receipts']);
+            $result = self::calculateAverageConsumptionAndDates($car['all_receipts']);
 
             $autoData[] = [
                 'car_name' => $car['name'],
-                'receipts' => $receipts,
-                'average_consumption' => $averageConsumption,
-                'first_date' => $firstDate,
-                'last_date' => $lastDate,
-                'date_difference' => $dateDifference,
+                'receiptFuel' => $receiptFuel,
+                'average_consumption' => $result['average_consumption'],
+                'first_date' => $result['first_date'],
+                'last_date' => $result['last_date'],
+                'date_difference' => $result['date_difference'],
             ];
         }
 
         return $autoData;
+    }
+
+    private static function getReceiptFuel(array $receipts)
+    {
+        $receiptFuel = [];
+        foreach ($receipts as $receipt) {
+            if (isset($receipt['receipt']) && $receipt['subcategory'] && $receipt['subcategory']['name'] === 'Топливо') {
+                $formattedDate = Carbon::parse($receipt['receipt']['datetime'])->format('d.m.y');
+                $receiptFuel[] = [
+                    'datetime' => $formattedDate,
+                    'subcategory' => $receipt['subcategory']['name'],
+                    'weight' => $receipt['weight'],
+                    'fuel_name' => $receipt['name'],
+                ];
+            }
+        }
+        return $receiptFuel;
+    }
+
+    private static function getReceiptInsurances(array $receipts)
+    {
+        $receiptInsurances = [];
+        foreach ($receipts as $receipt) {
+            if (isset($receipt['receipt']) && $receipt['subcategory'] && $receipt['subcategory']['name'] === 'Страховка') {
+                $formattedDate = Carbon::parse($receipt['receipt']['datetime'])->format('d.m.y');
+                $receiptFuel[] = [
+                    'datetime' => $formattedDate,
+                    'subcategory' => $receipt['subcategory']['name'],
+                    'expiry_date' => $receipt['expiry_date'],
+                ];
+            }
+        }
+        return $receiptInsurances;
+    }
+
+    private static function calculateAverageConsumptionAndDates(array $receipts)
+    {
+        $totalFuel = 0;
+        $totalDays = 0;
+        $previousReceipt = null;
+
+        foreach ($receipts as $receipt) {
+            if ($previousReceipt) {
+                $daysDifference = strtotime($receipt['receipt']['datetime']) - strtotime($previousReceipt['receipt']['datetime']);
+                if ($daysDifference > 0) {
+                    $daysDifference = floor($daysDifference / (60 * 60 * 24)); // Количество дней между заправками
+                    $totalFuel += $receipt['weight']; // Суммируем общее количество топлива
+                    $totalDays += $daysDifference; // Суммируем общее количество дней
+                }
+            }
+            $previousReceipt = $receipt;
+        }
+
+        // Вычисляем средний расход для данного автомобиля
+        $averageConsumption = $totalDays > 0 ? $totalFuel / $totalDays : 0;
+
+        // Вычисляем разницу в днях между первой и последней заправками
+        $firstDate = $receipts[0]['receipt']['datetime'] ?? null;
+        $lastDate = end($receipts)['receipt']['datetime'] ?? null;
+        $dateDifference = 0;
+        if ($firstDate && $lastDate) {
+            $firstDateCarbon = Carbon::parse($firstDate);
+            $lastDateCarbon = Carbon::parse($lastDate);
+            $dateDifference = $firstDateCarbon->diffInDays($lastDateCarbon);
+        }
+
+        return [
+            'average_consumption' => $averageConsumption,
+            'first_date' => $firstDate,
+            'last_date' => $lastDate,
+            'date_difference' => $dateDifference,
+        ];
     }
 }

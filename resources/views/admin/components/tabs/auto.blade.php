@@ -17,8 +17,9 @@
                         <p>Средний расход топлива: мало данных</p>
                     @endif
                     <h3>Заправки:</h3>
-                    @foreach ($car['receipts'] as $receipt)
-                        <div>{{ $receipt['fuel_name'] }} - {{ $receipt['weight'] }} л. ({{ $receipt['datetime'] }})
+                    @foreach ($car['receiptFuel'] as $fuel)
+                        <div>
+                            {{ $fuel['datetime'] }} - {{ $fuel['weight'] }} л. - {{ $fuel['fuel_name'] }}
                         </div>
                     @endforeach
                 </div>
