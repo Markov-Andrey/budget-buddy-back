@@ -15,20 +15,24 @@
     @if(request()->has('user'))
         <div style="border: 1px solid black; border-radius: 12px" class="flex gap-4 p-2">
             <span class="mr-4">
-                <div class="text-sm font-medium">Income:</div>
+                <div class="text-sm font-medium">Суммарный доход:</div>
                 <div style="color:#00b000;" class="text-lg font-semibold">{{ $income }}</div>
             </span>
             <span>
-                <div class="text-sm font-medium">Loss:</div>
+                <div class="text-sm font-medium">Суммарный расход:</div>
                 <div style="color:#f10000;" class="text-lg font-semibold">{{ $loss }}</div>
             </span>
             <span>
-                <div class="text-sm font-medium">Balance:</div>
+                <div class="text-sm font-medium">Текущий баланс:</div>
                     @if($balance > 0)
                     <div style="color:#00b000;" class="text-lg font-semibold">+{{ number_format($balance, 2) }}</div>
                 @else
                     <div style="color:#f10000;" class="text-lg font-semibold">{{ number_format($balance, 2) }}</div>
                 @endif
+            </span>
+            <span>
+                <div class="text-sm font-medium">Среднемесячный доход за прошедший год:</div>
+                <div style="color:#00b000;" class="text-lg font-semibold">{{ number_format($averageIncome, 2) }}</div>
             </span>
         </div>
     @endif

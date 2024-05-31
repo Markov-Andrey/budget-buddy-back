@@ -71,7 +71,7 @@ class Income extends Model
      * @param int $user_id
      * @return float
      */
-    public static function averageMonthlyIncomeLastYear(int $user_id): float
+    public static function averageMonthlyIncomeLastYear($user_id): float
     {
         // Субкатегории, которые необходимо исключить из расчета
         $subcategoriesToExclude = ['Разовый доход', 'Продажа б/у'];

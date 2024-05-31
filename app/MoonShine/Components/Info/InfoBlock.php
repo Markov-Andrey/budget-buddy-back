@@ -28,6 +28,7 @@ final class InfoBlock extends MoonShineComponent
     private mixed $loss;
     private mixed $balance;
     private mixed $autoData;
+    private mixed $averageIncome;
 
     public function __construct()
     {
@@ -39,12 +40,14 @@ final class InfoBlock extends MoonShineComponent
         $this->subCategoriesDataAuto = Receipts::calculatePricesBySubcategory($id, 'Автомобиль');
         $this->categoriesData = Receipts::calculatePricesByCategory($id);
         $this->amountData = Income::calculateByCategory($id);
+        $this->amountData = Income::calculateByCategory($id);
 
         $this->income = number_format(Income::totalIncomeUser($id), 2);
         $this->loss = number_format(Receipts::totalLossUser($id), 2);
         $this->balance = number_format($this->income - $this->loss, 2);
 
         $this->autoData = Auto::getAutoDataByUserId($id);
+        $this->averageIncome = Income::averageMonthlyIncomeLastYear($id);
     }
 
     /*
@@ -63,6 +66,7 @@ final class InfoBlock extends MoonShineComponent
             'loss' => $this->loss,
             'balance' => $this->balance,
             'autoData' => $this->autoData,
+            'averageIncome' => $this->averageIncome,
         ];
     }
 }
