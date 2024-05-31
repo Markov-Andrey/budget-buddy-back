@@ -66,12 +66,11 @@ class Income extends Model
 
     /**
      * Получить среднемесячный доход за последний год для указанного пользователя
-     * с отбраковкой определенных субкатегорий.
      *
      * @param int $user_id
      * @return float
      */
-    public static function averageMonthlyIncomeLastYear($user_id): float
+    public static function averageMonthlyLastYear($user_id): float
     {
         // Получаем текущую дату и дату, предшествующую году
         $now = now();

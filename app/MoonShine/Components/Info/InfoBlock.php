@@ -44,7 +44,7 @@ final class InfoBlock extends MoonShineComponent
         $this->balance = number_format((float)$income - (float)$loss, 2);
 
         $this->autoData = Auto::getAutoDataByUserId($id);
-        $this->averageIncome = Income::averageMonthlyIncomeLastYear($id);
+        $this->averageIncome = Income::averageMonthlyLastYear($id);
     }
 
     /*
