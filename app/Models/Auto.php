@@ -30,7 +30,7 @@ class Auto extends Model
 
     public static function getAutoDataByUserId($userId)
     {
-        $auto = Auto::with('allReceipts', 'allReceipts.subcategory', 'allReceipts.receipt', 'allReceipts.autoInsurance')
+        $auto = Auto::with('allReceipts', 'allReceipts.subcategory', 'allReceipts.receipt', 'allReceipts.autoInsurance', 'allReceipts.autoTechInspections')
             ->where('user_id', $userId)
             ->get()
             ->toArray();
@@ -39,6 +39,7 @@ class Auto extends Model
         foreach ($auto as $car) {
             $receiptFuel = self::getReceiptFuel($car['all_receipts']);
             $receiptInsurances = self::getReceiptInsurances($car['all_receipts']);
+            $receiptTechInspections = self::getReceiptTechInspection($car['all_receipts'], $car['service_interval']);
             $result = self::calculateAverageConsumptionAndDates($car['all_receipts']);
 
             $autoData[] = [
@@ -49,6 +50,7 @@ class Auto extends Model
                 'date_difference' => $result['date_difference'],
                 'receiptFuel' => $receiptFuel,
                 'receiptInsurances' => $receiptInsurances,
+                'receiptTechInspections' => $receiptTechInspections,
             ];
         }
 
@@ -83,6 +85,28 @@ class Auto extends Model
                     'datetime' => $formattedDate,
                     'subcategory' => $receipt['subcategory']['name'],
                     'expiry_date' => $formattedExpiryDate,
+                ];
+            }
+        }
+        return $receiptInsurances;
+    }
+
+    private static function getReceiptTechInspection(array $receipts, $serviceInterval = 0)
+    {
+        $receiptInsurances = [];
+        foreach ($receipts as $receipt) {
+            if (isset($receipt['receipt']) && $receipt['subcategory'] && $receipt['subcategory']['name'] === 'Плановое ТО') {
+                $formattedDate = Carbon::parse($receipt['receipt']['datetime'])->format('d.m.y');
+                $nextTechInspection = $receipt['auto_tech_inspections']['inspection_mileage'] + $serviceInterval;
+                $receiptInsurances[] = [
+                    'datetime' => $formattedDate,
+                    'name' => $receipt['name'],
+                    'quantity' => $receipt['quantity'],
+                    'weight' => $receipt['weight'],
+                    'price' => $receipt['price'],
+                    'subcategory' => $receipt['subcategory']['name'],
+                    'techInspection' => $receipt['auto_tech_inspections']['inspection_mileage'],
+                    'nextTechInspection' => $nextTechInspection,
                 ];
             }
         }

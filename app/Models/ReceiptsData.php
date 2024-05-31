@@ -34,6 +34,11 @@ class ReceiptsData extends Model
         return $this->hasOne(AutoInsurance::class, 'receipts_data_id');
     }
 
+    public function autoTechInspections()
+    {
+        return $this->hasOne(AutoTechnicalInspection::class, 'receipts_data_id');
+    }
+
     public function morph()
     {
         return $this->morphTo();
