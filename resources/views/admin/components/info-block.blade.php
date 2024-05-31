@@ -15,12 +15,12 @@
     @if(request()->has('user'))
         <div style="border: 1px solid black; border-radius: 12px" class="flex gap-4 p-2">
             <span>
-                <div class="text-sm font-medium">Среднемесячные траты:
+                <div class="text-sm font-medium">Среднемесячный доход:
                     <p>{{ number_format($incomeAverage, 2) }}</p>
                 </div>
             </span>
             <span>
-                <div class="text-sm font-medium">Среднемесячный доход:
+                <div class="text-sm font-medium">Среднемесячные траты:
                     <p>{{ number_format($lossAverage, 2) }}</p>
                 </div>
             </span>

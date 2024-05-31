@@ -24,7 +24,6 @@ final class InfoBlock extends MoonShineComponent
     private array $subCategoriesDataAuto;
     private mixed $amountData;
     private mixed $autoData;
-    private mixed $averageIncome;
     private mixed $incomeAverage;
     private mixed $lossAverage;
 
@@ -44,7 +43,6 @@ final class InfoBlock extends MoonShineComponent
         $this->lossAverage = Receipts::averageMonthlyLastYear($id);
 
         $this->autoData = Auto::getAutoDataByUserId($id);
-        $this->averageIncome = Income::averageMonthlyLastYear($id);
     }
 
     /*

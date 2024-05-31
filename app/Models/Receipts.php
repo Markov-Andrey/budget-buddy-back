@@ -206,7 +206,7 @@ class Receipts extends Model
     }
 
     /**
-     * Получить среднемесячный доход за последний год для указанного пользователя по чекам
+     * Получить среднемесячные траты за последний год для указанного пользователя по чекам
      *
      * @param int $user_id
      * @return float
@@ -224,10 +224,18 @@ class Receipts extends Model
 
         // Получаем количество месяцев данных (минимум 1 месяц)
         $monthsWithData = max(1, $now->diffInMonths($oneYearAgo));
-
         $averageMonthlyIncome = $averageIncome / $monthsWithData;
 
-        // Рассчитываем средний доход за месяц
         return (new Receipts)->getAmountAttribute($averageMonthlyIncome);
+    }
+
+    public static function sumFromStartOfMonth($user_id): float
+    {
+        $startOfThisMonth = now()->startOfMonth();
+        $totalAmount = self::where('user_id', $user_id)
+            ->where('created_at', '>=', $startOfThisMonth)
+            ->sum('amount');
+
+        return (new Receipts)->getAmountAttribute($totalAmount);
     }
 }

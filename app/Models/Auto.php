@@ -77,15 +77,24 @@ class Auto extends Model
     private static function getReceiptInsurances(array $receipts)
     {
         $receiptInsurances = [];
+        $now = now();
         foreach ($receipts as $receipt) {
-            if (isset($receipt['receipt']) && $receipt['subcategory'] && $receipt['subcategory']['name'] === 'Страховка') {
-                $formattedDate = Carbon::parse($receipt['receipt']['datetime'])->format('d.m.y');
-                $formattedExpiryDate = Carbon::parse($receipt['auto_insurance']['expiry_date'])->format('d.m.y');
-                $receiptInsurances[] = [
-                    'datetime' => $formattedDate,
-                    'subcategory' => $receipt['subcategory']['name'],
-                    'expiry_date' => $formattedExpiryDate,
-                ];
+            if (
+                isset($receipt['receipt'])
+                && $receipt['subcategory']
+                && $receipt['subcategory']['name'] === 'Страховка'
+                && isset($receipt['auto_insurance']['expiry_date'])
+            ) {
+                $expiryDate = Carbon::parse($receipt['auto_insurance']['expiry_date']);
+                if ($expiryDate->gt($now)) {
+                    $formattedDate = Carbon::parse($receipt['receipt']['datetime'])->format('d.m.y');
+                    $formattedExpiryDate = $expiryDate->format('d.m.y');
+                    $receiptInsurances[] = [
+                        'datetime' => $formattedDate,
+                        'subcategory' => $receipt['subcategory']['name'],
+                        'expiry_date' => $formattedExpiryDate,
+                    ];
+                }
             }
         }
         return $receiptInsurances;

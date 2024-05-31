@@ -26,13 +26,15 @@
                         @endforeach
                     @endif
 
+                    <h3 class="font-bold">Страховки:</h3>
                     @if(count($car['receiptInsurances']))
-                        <h3 class="font-bold">Страховки:</h3>
                         @foreach ($car['receiptInsurances'] as $insurance)
                             <div>
                                 с {{ $insurance['datetime'] }} до {{ $insurance['expiry_date'] }}
                             </div>
                         @endforeach
+                    @else
+                        <div>Нет действующей страховки</div>
                     @endif
 
                     @if(count($car['receiptTechInspections']))
