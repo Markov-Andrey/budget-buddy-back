@@ -203,4 +203,32 @@ class Receipts extends Model
             'total' => array_sum($formattedDetails)
         ];
     }
+
+    /**
+     * Получить среднемесячный доход за последний год для указанного пользователя
+     * по чекам.
+     *
+     * @param int $user_id
+     * @return float
+     */
+    public static function averageMonthlyIncomeLastYear($user_id): float
+    {
+        // Получаем текущую дату и дату, предшествующую году
+        $now = now();
+        $oneYearAgo = $now->subYear();
+
+        // Выполняем запрос
+        $averageIncome = self::query()->where('user_id', $user_id)
+            ->where('created_at', '>=', $oneYearAgo)
+            ->sum('amount');
+
+        // Получаем количество месяцев данных (минимум 1 месяц)
+        $monthsWithData = max(1, $now->diffInMonths($oneYearAgo));
+
+        // Рассчитываем средний доход за месяц
+        $averageMonthlyIncome = $averageIncome / $monthsWithData;
+
+        // Возвращаем средний доход за месяц
+        return (new Receipts)->getAmountAttribute($averageMonthlyIncome);
+    }
 }

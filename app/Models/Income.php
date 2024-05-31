@@ -73,21 +73,12 @@ class Income extends Model
      */
     public static function averageMonthlyIncomeLastYear($user_id): float
     {
-        // Субкатегории, которые необходимо исключить из расчета
-        $subcategoriesToExclude = ['Разовый доход', 'Продажа б/у'];
-
         // Получаем текущую дату и дату, предшествующую году
         $now = now();
         $oneYearAgo = $now->subYear();
 
         // Выполняем запрос
         $averageIncome = self::where('user_id', $user_id)
-            ->whereNotIn('subcategory_id', function ($query) use ($subcategoriesToExclude) {
-                // Подзапрос для выбора ID субкатегорий, которые нужно исключить
-                $query->select('id')
-                    ->from('subcategories')
-                    ->whereIn('name', $subcategoriesToExclude);
-            })
             ->where('created_at', '>=', $oneYearAgo)
             ->sum('amount');
 
