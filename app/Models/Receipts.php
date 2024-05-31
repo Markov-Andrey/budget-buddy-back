@@ -219,7 +219,7 @@ class Receipts extends Model
 
         // Выполняем запрос
         $averageIncome = self::query()->where('user_id', $user_id)
-            ->where('created_at', '>=', $oneYearAgo)
+            ->where('datetime', '>=', $oneYearAgo)
             ->sum('amount');
 
         // Получаем количество месяцев данных (минимум 1 месяц)
