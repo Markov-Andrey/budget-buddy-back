@@ -14,16 +14,15 @@ class InfoController extends Controller
      *      operationId="getBalanceInfo",
      *      tags={"Balance"},
      *      summary="Получить информацию о балансе пользователя",
-     *      description="Этот эндпоинт позволяет получить информацию о балансе пользователя, включая доход, расход и текущий баланс.",
+     *      description="Этот эндпоинт позволяет получить информацию о балансе пользователя, включая среднемесячный доход и среднемесячные траты за последний год.",
      *      security={ {"bearerAuth": {}} },
      *      @OA\Response(
      *          response=200,
      *          description="Успешный ответ",
      *          @OA\JsonContent(
      *              type="object",
-     *              @OA\Property(property="income", type="number", example="1000.00"),
-     *              @OA\Property(property="loss", type="number", example="500.00"),
-     *              @OA\Property(property="balance", type="number", example="500.00"),
+     *              @OA\Property(property="income", type="number", format="float", example="1000.00", description="Среднемесячный доход за последний год."),
+     *              @OA\Property(property="loss", type="number", format="float", example="500.00", description="Среднемесячные траты за последний год."),
      *          )
      *      ),
      *      @OA\Response(
