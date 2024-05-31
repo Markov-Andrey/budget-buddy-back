@@ -32,12 +32,13 @@
             </span>
         </div>
     @endif
-    <x-moonshine::tabs
-        :tabs="[
+    @if($users)
+            <x-moonshine::tabs
+                :tabs="[
             'income' => 'Доходы',
             'total' => 'Расходы',
         ]"
-        :contents="[
+                :contents="[
             'income' => view('admin.components.tabs.income', ['amountData' => $amountData, 'user' => $user])->render(),
             'total' => view('admin.components.tabs.total', [
                 'categoriesData' => $categoriesData,
@@ -47,7 +48,8 @@
                 'user' => $user
             ])->render(),
         ]"
-    />
+            />
+    @endif
 </div>
 
 <script>
