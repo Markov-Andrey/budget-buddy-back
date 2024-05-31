@@ -12,7 +12,7 @@
         </x-moonshine::form.select>
     @endif
     <hr>
-    @if($users)
+    @if(request()->has('user'))
         <div style="border: 1px solid black; border-radius: 12px" class="flex gap-4 p-2">
             <span class="mr-4">
                 <div class="text-sm font-medium">Income:</div>
@@ -32,7 +32,7 @@
             </span>
         </div>
     @endif
-    @if($users)
+    @if(request()->has('user'))
             <x-moonshine::tabs
                 :tabs="[
             'income' => 'Доходы',
