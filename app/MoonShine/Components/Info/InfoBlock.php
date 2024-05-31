@@ -21,6 +21,7 @@ final class InfoBlock extends MoonShineComponent
     protected mixed $data;
     protected mixed $categoriesData;
     private array $subCategoriesData;
+    private array $subCategoriesDataAuto;
     private mixed $amountData;
 
     private mixed $income;
@@ -35,6 +36,7 @@ final class InfoBlock extends MoonShineComponent
         $this->users = User::all();
 
         $this->subCategoriesData = Receipts::calculatePricesBySubcategory($id, 'Продукты');
+        $this->subCategoriesDataAuto = Receipts::calculatePricesBySubcategory($id, 'Автомобиль');
         $this->categoriesData = Receipts::calculatePricesByCategory($id);
         $this->amountData = Income::calculateByCategory($id);
 
@@ -55,6 +57,7 @@ final class InfoBlock extends MoonShineComponent
             'user' => $this->user,
             'categoriesData' => $this->categoriesData,
             'subCategoriesData' => $this->subCategoriesData,
+            'subCategoriesDataAuto' => $this->subCategoriesDataAuto,
             'amountData' => $this->amountData,
             'income' => $this->income,
             'loss' => $this->loss,
