@@ -30,7 +30,7 @@ class Auto extends Model
 
     public static function getAutoDataByUserId($userId)
     {
-        $auto = Auto::with('allReceipts', 'allReceipts.subcategory', 'allReceipts.receipt')
+        $auto = Auto::with('allReceipts', 'allReceipts.subcategory', 'allReceipts.receipt', 'allReceipts.autoInsurance')
             ->where('user_id', $userId)
             ->get()
             ->toArray();
@@ -43,11 +43,12 @@ class Auto extends Model
 
             $autoData[] = [
                 'car_name' => $car['name'],
-                'receiptFuel' => $receiptFuel,
                 'average_consumption' => $result['average_consumption'],
                 'first_date' => $result['first_date'],
-                'last_date' => $result['last_date'], // TODO ТУТ ПРОДОЛЖИ!
+                'last_date' => $result['last_date'],
                 'date_difference' => $result['date_difference'],
+                'receiptFuel' => $receiptFuel,
+                'receiptInsurances' => $receiptInsurances,
             ];
         }
 
@@ -77,10 +78,11 @@ class Auto extends Model
         foreach ($receipts as $receipt) {
             if (isset($receipt['receipt']) && $receipt['subcategory'] && $receipt['subcategory']['name'] === 'Страховка') {
                 $formattedDate = Carbon::parse($receipt['receipt']['datetime'])->format('d.m.y');
-                $receiptFuel[] = [
+                $formattedExpiryDate = Carbon::parse($receipt['auto_insurance']['expiry_date'])->format('d.m.y');
+                $receiptInsurances[] = [
                     'datetime' => $formattedDate,
                     'subcategory' => $receipt['subcategory']['name'],
-                    'expiry_date' => $receipt['expiry_date'],
+                    'expiry_date' => $formattedExpiryDate,
                 ];
             }
         }

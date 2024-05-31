@@ -29,6 +29,10 @@ class ReceiptsData extends Model
     {
         return $this->belongsTo(Subcategory::class, 'subcategory_id');
     }
+    public function autoInsurance()
+    {
+        return $this->hasOne(AutoInsurance::class, 'receipts_data_id');
+    }
 
     public function morph()
     {
