@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/hello', function () {
+    $test = \App\Models\Income::averageMonthlyIncomeLastYear(1);
+    dd($test);
+
     return 'hello';
 });
 
