@@ -46,7 +46,7 @@ class Auto extends Model
                 'receiptFuel' => $receiptFuel,
                 'average_consumption' => $result['average_consumption'],
                 'first_date' => $result['first_date'],
-                'last_date' => $result['last_date'],
+                'last_date' => $result['last_date'], // TODO ТУТ ПРОДОЛЖИ!
                 'date_difference' => $result['date_difference'],
             ];
         }
