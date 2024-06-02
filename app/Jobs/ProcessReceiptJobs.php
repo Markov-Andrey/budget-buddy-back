@@ -70,14 +70,25 @@ class ProcessReceiptJobs implements ShouldQueue
             }
 
             if (isset($data['data']['items']) && is_array($data['data']['items'])) {
+                $receiptData = [];
                 foreach ($data['data']['items'] as $item) {
-                    ReceiptsData::create([
+                    $receiptData[] = [
                         'receipts_id' => $this->receipt->id,
                         'name' => $item['name'] ?? null,
                         'quantity' => $item['quantity'] ?? null,
                         'weight' => $item['weight'] ?? null,
                         'price' => $item['price'] ?? null,
-                    ]);
+                    ];
+                }
+                ReceiptsData::insert($receiptData);
+                
+                $receiptTotalAmount = ReceiptsData::where('receipts_id', $this->receipt->id)
+                    ->selectRaw('SUM(price * COALESCE(quantity, 1)) as total_amount')
+                    ->value('total_amount');
+                $receipt = Receipts::find($this->receipt->id);
+                if ($receipt) {
+                    $receipt->amount = $receiptTotalAmount;
+                    $receipt->save();
                 }
             }
 
