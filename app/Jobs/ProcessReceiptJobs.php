@@ -15,7 +15,6 @@ use Illuminate\Queue\SerializesModels;
 use GeminiAPI\Laravel\Facades\Gemini;
 use Exception;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 
 class ProcessReceiptJobs implements ShouldQueue
 {
@@ -101,18 +100,15 @@ class ProcessReceiptJobs implements ShouldQueue
                 ];
             }
 
-            ReceiptsData::insert($receiptData);
+            ReceiptsData::query()->insert($receiptData);
 
             $receiptTotalAmount = ReceiptsData::query()
                 ->where('receipts_id', $this->receipt->id)
                 ->selectRaw('SUM(price * COALESCE(quantity, 1)) as total_amount')
                 ->value('total_amount');
 
-            $receipt = Receipts::find($this->receipt->id);
-            if ($receipt) {
-                $receipt->amount = $receiptTotalAmount;
-                $receipt->save();
-            }
+            $this->receipt->amount = $receiptTotalAmount;
+            $this->receipt->save();
         }
     }
 }
