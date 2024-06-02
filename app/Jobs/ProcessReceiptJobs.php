@@ -21,14 +21,14 @@ class ProcessReceiptJobs implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $receipt;
+    protected Receipts $receipt;
 
     public function __construct(Receipts $receipt)
     {
         $this->receipt = $receipt;
     }
 
-    public function handle()
+    public function handle(): void
     {
         $filePath = storage_path('app/public/' . $this->receipt->image_path);
         $prompt = config('api.check_processing.prompt');
@@ -55,7 +55,7 @@ class ProcessReceiptJobs implements ShouldQueue
         }
     }
 
-    protected function processDatetime(array $data)
+    protected function processDatetime(array $data): void
     {
         $datetimeString = $data['data']['datetime'];
         $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $datetimeString);
@@ -74,7 +74,7 @@ class ProcessReceiptJobs implements ShouldQueue
         }
     }
 
-    protected function processAddress(array $data)
+    protected function processAddress(array $data): void
     {
         if (isset($data['data']['address']) && is_array($data['data']['address'])) {
             ReceiptsOrganization::create([
@@ -87,7 +87,7 @@ class ProcessReceiptJobs implements ShouldQueue
         }
     }
 
-    protected function processItems(array $data)
+    protected function processItems(array $data): void
     {
         if (isset($data['data']['items']) && is_array($data['data']['items'])) {
             $receiptData = [];
