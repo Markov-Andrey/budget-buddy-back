@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/hello', function () {
+    (new App\Http\Controllers\DiscordController)->index();
     return 'hello';
 });
 

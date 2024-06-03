@@ -10,6 +10,7 @@ class DiscordController extends Controller
     private string $emojiView = '👀';
     private string $urlApi;
     private string $channelId;
+    private int $lastNumMessages = 25;
 
     public function __construct()
     {
@@ -30,11 +31,12 @@ class DiscordController extends Controller
 
     private function getMessagesWithNoReaction(): array
     {
-        $messageId = DiscordChat::query()->where('chat_id', $this->channelId)->value('last_message_id');
-        $after = $messageId ? '?after=' . $messageId : '';
+        // $messageId = DiscordChat::query()->where('chat_id', $this->channelId)->value('last_message_id');
+        $after = '?limit=' . $this->lastNumMessages;
         $response = $this->client->get($this->urlApi . 'channels/' . $this->channelId . '/messages' . $after);
         $messages = json_decode($response->getBody(), true);
         $messagesWithNoReaction = [];
+        dd($messages);
 
         $lastId = null;
         if (!empty($messages)) {
