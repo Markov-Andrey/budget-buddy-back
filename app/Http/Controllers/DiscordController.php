@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\DiscordChat;
 use GuzzleHttp\Client;
 
 class DiscordController extends Controller
@@ -31,7 +30,6 @@ class DiscordController extends Controller
 
     private function getMessagesWithNoReaction(): array
     {
-        // $messageId = DiscordChat::query()->where('chat_id', $this->channelId)->value('last_message_id');
         $after = '?limit=' . $this->lastNumMessages;
         $response = $this->client->get($this->urlApi . 'channels/' . $this->channelId . '/messages' . $after);
         $messages = json_decode($response->getBody(), true);
@@ -48,18 +46,6 @@ class DiscordController extends Controller
                     $messagesWithNoReaction[] = $message;
                     $lastId = $message['id'];
                 }
-            }
-        }
-        // хранение чата и последнего посмотренного сообщения
-        $chat = DiscordChat::where('chat_id', $this->channelId)->first();
-        if ($lastId) {
-            if ($chat) {
-                $chat->update(['last_message_id' => $lastId]);
-            } else {
-                DiscordChat::create([
-                    'chat_id' => $this->channelId,
-                    'last_message_id' => $lastId
-                ]);
             }
         }
 
