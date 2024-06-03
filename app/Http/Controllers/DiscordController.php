@@ -1,75 +1,127 @@
 <?php
 
 namespace App\Http\Controllers;
-use GuzzleHttp\Client;
+
+use App\Models\Receipts;
+use App\Models\ReceiptsData;
+use App\Models\User;
+use App\Services\DiscordService;
+use GuzzleHttp\Exception\GuzzleException;
 
 class DiscordController extends Controller
 {
-    private object $client;
-    private string $emojiView = '👀';
-    private string $urlApi;
-    private string $channelId;
-    private int $lastNumMessages = 25;
+    private DiscordService $discord;
 
     public function __construct()
     {
-        $this->client = new Client([
-            'headers' => [
-                'Authorization' => 'Bot ' . env('DISCORD_API_BOT_TOKEN'),
-            ],
-        ]);
-
-        $this->urlApi = 'https://discord.com/api/v10/';
-        $this->channelId = '1245678879151095861';
+        $this->discord = new DiscordService;
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function index(): array
     {
-        return $this->getMessagesWithNoReaction();
-    }
+        $messages = $this->discord->getMessages();
+        $messagesNoAttachment = [];
+        $messagesWithAttachment = [];
 
-    private function getMessagesWithNoReaction(): array
-    {
-        $after = '?limit=' . $this->lastNumMessages;
-        $response = $this->client->get($this->urlApi . 'channels/' . $this->channelId . '/messages' . $after);
-        $messages = json_decode($response->getBody(), true);
-        $messagesWithNoReaction = [];
-        dd($messages);
-
-        $lastId = null;
-        if (!empty($messages)) {
-            foreach ($messages as $message) {
-                $hasThumbsUpReaction = $this->hasThumbsUpReaction($message);
-
-                if (!$hasThumbsUpReaction) {
-                    $this->addThumbsUpReaction($message);
-                    $messagesWithNoReaction[] = $message;
-                    $lastId = $message['id'];
+        foreach ($messages as $message) {
+            if (!$this->discord->hasReaction($message, '👀') &&
+                $this->discord->hasString($message, 'Афи') &&
+                $this->discord->hasString($message, 'чек')) {
+                if ($this->discord->hasAttachments($message)) {
+                    $messagesNoAttachment[] = $message;
+                } else {
+                    $messagesWithAttachment[] = $message;
                 }
             }
         }
 
-        return $messagesWithNoReaction;
+        $result = [];
+
+        if (!empty($messagesNoAttachment)) {
+            $result['messages'] = $this->processMessagesNoAttachment($messagesNoAttachment);
+        }
+
+        if (!empty($messagesWithAttachment)) {
+            $result['messages'] = $this->processMessagesWithAttachment($messagesWithAttachment);
+        }
+
+        return $result;
     }
 
-    private function hasThumbsUpReaction($message): bool
+    private function processMessagesNoAttachment(array $messages): array
     {
-        if (isset($message['reactions'])) {
-            foreach ($message['reactions'] as $reaction) {
-                if ($reaction['me'] === true && $reaction['emoji']['name'] === $this->emojiView) {
-                    return true;
+        $processedMessages = [];
+
+        foreach ($messages as $message) {
+            $lines = explode("\n", $message['content']);
+            array_shift($lines);
+            foreach ($lines as $line) {
+                $line = trim($line);
+                $parts = explode(',', $line);
+                $parts = array_map('trim', $parts);
+
+                $count = 1; // По умолчанию количество равно 1
+                $weight = 0; // По умолчанию вес равен 0
+                $price = 0; // По умолчанию цена равна 0
+
+                foreach ($parts as $part) {
+                    if (str_contains($part, 'шт')) {
+                        $count = (int) $part;
+                    } elseif (str_contains($part, 'л') || str_contains($part, 'кг')) {
+                        $weight = (float) $part;
+                    } elseif (str_contains($part, 'руб')) {
+                        $price = (float) $part;
+                    }
                 }
+
+                $user = User::query()->where('discord_name', $message['author']['username'])->first();
+                $user_id = $user?->id;
+
+                $processedMessages[] = [
+                    'user_id' => $user_id, // ID
+                    'name' => $parts[0], // Название
+                    'quantity' => $count,   // Количество
+                    'weight' => $weight, // Вес
+                    'price' => $price,    // Цена
+                    'datetime' => date('Y-m-d H:i:s', strtotime($message['timestamp'])), // Дата
+                ];
             }
         }
 
-        return false;
+        $receipt = new Receipts();
+        $receipt->user_id = $processedMessages[0]['user_id'];
+        $receipt->datetime = $processedMessages[0]['datetime'];
+        $receipt->processed = 1;
+        $receipt->save();
+
+        $receiptData = [];
+        $sumAmount = 0;
+
+        foreach ($processedMessages as $data){
+            if($data['name'] && $data['price']) {
+
+            }
+            $receiptData[] = [
+                'receipts_id' => $receipt->id,
+                'name' => $data['name'],
+                'quantity' => $data['quantity'],
+                'weight' => $data['weight'],
+                'price' => $data['price'],
+            ];
+            $sumAmount += $data['price'] * $data['quantity'] * 100;
+        }
+        ReceiptsData::insert($receiptData);
+        Receipts::where('id', $receipt->id)->update(['amount' => intval($sumAmount)]);
+
+        return $processedMessages;
     }
 
-    private function addThumbsUpReaction($message): void
+    private function processMessagesWithAttachment(array $messages): array
     {
-        $messageId = $message['id'];
-        $putResponse = $this->client->put($this->urlApi . 'channels/' . $this->channelId . '/messages/' . $messageId . '/reactions/' . $this->emojiView . '/@me');
-
-        $putResponse->getStatusCode() == 204;
+        // Логика обработки сообщений с вложениями
+        return $messages;
     }
 }
