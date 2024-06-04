@@ -10,7 +10,6 @@ class DiscordService
     private Client $client;
     private string $apiUrl;
     private string $channelId;
-    private float $requestDelay;
 
     public function __construct()
     {
@@ -23,7 +22,6 @@ class DiscordService
 
         $this->apiUrl = 'https://discord.com/api/v10/';
         $this->channelId = '1245678879151095861';
-        $this->requestDelay = 0.3 * 1000000;
     }
 
     /**
@@ -54,7 +52,6 @@ class DiscordService
      */
     public function addReaction(string $messageId, string $emoji): bool
     {
-        usleep($this->requestDelay);
         $response = $this->client->put($this->apiUrl . 'channels/' . $this->channelId . '/messages/' . $messageId . '/reactions/' . urlencode($emoji) . '/@me');
 
         return $response->getStatusCode() === 204;
@@ -87,6 +84,6 @@ class DiscordService
 
     public static function hasAttachments(array $message): bool
     {
-        return isset($message['attachments']);
+        return !empty($message['attachments']);
     }
 }

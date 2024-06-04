@@ -6,7 +6,13 @@ use App\Models\Receipts;
 use App\Models\ReceiptsData;
 use App\Models\User;
 use App\Services\DiscordService;
+use DateTime;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DiscordController extends Controller
 {
@@ -20,7 +26,7 @@ class DiscordController extends Controller
     /**
      * @throws GuzzleException
      */
-    public function index(): array
+    public function index(): void
     {
         $messages = $this->discord->getMessages();
         $messagesNoAttachment = [];
@@ -31,31 +37,28 @@ class DiscordController extends Controller
                 $this->discord->hasString($message, 'Афи') &&
                 $this->discord->hasString($message, 'чек')) {
                 if ($this->discord->hasAttachments($message)) {
-                    $messagesNoAttachment[] = $message;
-                } else {
                     $messagesWithAttachment[] = $message;
+                } else {
+                    $messagesNoAttachment[] = $message;
                 }
             }
         }
 
-        $result = [];
-
         if (!empty($messagesNoAttachment)) {
-            $result['messages'] = $this->processMessagesNoAttachment($messagesNoAttachment);
+            $this->processMessagesNoAttachment($messagesNoAttachment);
         }
 
         if (!empty($messagesWithAttachment)) {
-            $result['messages'] = $this->processMessagesWithAttachment($messagesWithAttachment);
+            $this->processMessagesWithAttachment($messagesWithAttachment);
         }
-
-        return $result;
     }
 
-    private function processMessagesNoAttachment(array $messages): array
+    private function processMessagesNoAttachment(array $messages): void
     {
-        $processedMessages = [];
-
         foreach ($messages as $message) {
+            $this->discord->addReaction($message['id'], '👀');
+
+            $processedMessages = [];
             $lines = explode("\n", $message['content']);
             array_shift($lines);
             foreach ($lines as $line) {
@@ -83,45 +86,96 @@ class DiscordController extends Controller
                 $processedMessages[] = [
                     'user_id' => $user_id, // ID
                     'name' => $parts[0], // Название
-                    'quantity' => $count,   // Количество
+                    'quantity' => $count, // Количество
                     'weight' => $weight, // Вес
-                    'price' => $price,    // Цена
+                    'price' => $price, // Цена
                     'datetime' => date('Y-m-d H:i:s', strtotime($message['timestamp'])), // Дата
                 ];
             }
-        }
 
-        $receipt = new Receipts();
-        $receipt->user_id = $processedMessages[0]['user_id'];
-        $receipt->datetime = $processedMessages[0]['datetime'];
-        $receipt->processed = 1;
-        $receipt->save();
+            try {
+                DB::beginTransaction();
 
-        $receiptData = [];
-        $sumAmount = 0;
+                $receipt = new Receipts();
+                $receipt->user_id = $processedMessages[0]['user_id'];
+                $receipt->datetime = $processedMessages[0]['datetime'];
+                $receipt->processed = 1;
+                $receipt->save();
 
-        foreach ($processedMessages as $data){
-            if($data['name'] && $data['price']) {
+                $receiptData = [];
+                $sumAmount = 0;
 
+                foreach ($processedMessages as $data) {
+                    if ($data['name'] && $data['price']) {
+                        $receiptData[] = [
+                            'receipts_id' => $receipt->id,
+                            'name' => $data['name'],
+                            'quantity' => $data['quantity'],
+                            'weight' => $data['weight'],
+                            'price' => $data['price'],
+                        ];
+                        $sumAmount += $data['price'] * $data['quantity'] * 100;
+                    }
+                }
+
+                ReceiptsData::insert($receiptData);
+                Receipts::where('id', $receipt->id)->update(['amount' => intval($sumAmount)]);
+
+                DB::commit();
+
+                $this->discord->addReaction($message['id'], '👍');
+            } catch (Exception $e) {
+                DB::rollBack();
+                Log::error("Error processing message: " . $e->getMessage());
+                $this->discord->addReaction($message['id'], '👎');
             }
-            $receiptData[] = [
-                'receipts_id' => $receipt->id,
-                'name' => $data['name'],
-                'quantity' => $data['quantity'],
-                'weight' => $data['weight'],
-                'price' => $data['price'],
-            ];
-            $sumAmount += $data['price'] * $data['quantity'] * 100;
         }
-        ReceiptsData::insert($receiptData);
-        Receipts::where('id', $receipt->id)->update(['amount' => intval($sumAmount)]);
-
-        return $processedMessages;
     }
 
-    private function processMessagesWithAttachment(array $messages): array
+    /**
+     * @throws \Exception
+     * @throws GuzzleException
+     */
+    private function processMessagesWithAttachment(array $messages): void
     {
-        // Логика обработки сообщений с вложениями
-        return $messages;
+        foreach ($messages as $message) {
+            $user = User::query()->where('discord_name', $message['author']['username'])->first();
+            $user_id = $user?->id;
+
+            $this->discord->addReaction($message['id'], '👀');
+
+            try {
+                foreach ($message['attachments'] as $newPhoto) {
+                    $imageContents = file_get_contents($newPhoto['proxy_url']);
+                    if ($imageContents === false) {
+                        throw new Exception("Unable to fetch image contents");
+                    }
+
+                    $urlPath = parse_url($newPhoto['proxy_url'], PHP_URL_PATH);
+                    $imageName = basename($urlPath);
+                    $imageExtension = pathinfo($imageName, PATHINFO_EXTENSION);
+                    $imagePath = 'receipts/' . pathinfo($imageName, PATHINFO_FILENAME) . '.' . $imageExtension;
+                    Storage::disk('public')->put($imagePath, $imageContents);
+
+                    if (!Storage::disk('public')->exists($imagePath)) {
+                        throw new Exception("Failed to save image: $imagePath");
+                    }
+
+                    $datetime = new DateTime($message['timestamp']);
+                    $formattedDatetime = $datetime->format('Y-m-d H:i:s');
+
+                    $receipt = new Receipts();
+                    $receipt->user_id = $user_id;
+                    $receipt->datetime = $formattedDatetime;
+                    $receipt->image_path = $imagePath;
+                    $receipt->save();
+                }
+
+                $this->discord->addReaction($message['id'], '👍');
+            } catch (Exception $e) {
+                Log::error("Error processing message attachment: " . $e->getMessage());
+                $this->discord->addReaction($message['id'], '👎');
+            }
+        }
     }
 }
