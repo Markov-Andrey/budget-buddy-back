@@ -13,12 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/hello', function () {
-    $return = (new App\Http\Controllers\DiscordController)->index();
+Route::get('/discord', function () {
+    (new App\Http\Controllers\DiscordController)->index();
 
-    dd($return);
-
-    return 'hello';
+    return 'discord final';
 });
 
 Route::get('/', function () {
