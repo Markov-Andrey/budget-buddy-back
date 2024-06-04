@@ -77,11 +77,24 @@ class DiscordService
         return false;
     }
 
+    /**
+     * Проверяет, содержит ли сообщение определенную строку.
+     *
+     * @param array $message Сообщение.
+     * @param string $name Строка для поиска.
+     * @return bool Возвращает true, если сообщение содержит указанную строку, в противном случае возвращает false.
+     */
     public static function hasString(array $message, string $name): bool
     {
         return (isset($message['content']) && str_contains($message['content'], $name));
     }
 
+    /**
+     * Проверяет, имеет ли сообщение вложения.
+     *
+     * @param array $message Сообщение.
+     * @return bool Возвращает true, если сообщение имеет вложения, в противном случае возвращает false.
+     */
     public static function hasAttachments(array $message): bool
     {
         return !empty($message['attachments']);

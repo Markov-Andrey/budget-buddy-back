@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Income;
 use App\Models\Receipts;
 use App\Models\ReceiptsData;
+use App\Models\Subcategory;
 use App\Models\User;
 use App\Services\DiscordService;
 use DateTime;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,6 +25,9 @@ class DiscordController extends Controller
     }
 
     /**
+     * Обработчик сообщений из Discord.
+     *
+     * @return void
      * @throws GuzzleException
      */
     public function index(): void
@@ -31,15 +35,19 @@ class DiscordController extends Controller
         $messages = $this->discord->getMessages();
         $messagesNoAttachment = [];
         $messagesWithAttachment = [];
+        $messagesIncome = [];
 
         foreach ($messages as $message) {
-            if (!$this->discord->hasReaction($message, '👀') &&
-                $this->discord->hasString($message, 'Афи') &&
-                $this->discord->hasString($message, 'чек')) {
-                if ($this->discord->hasAttachments($message)) {
-                    $messagesWithAttachment[] = $message;
-                } else {
-                    $messagesNoAttachment[] = $message;
+            if (!$this->discord->hasReaction($message, '👀') && $this->discord->hasString($message, 'Афи')) {
+                if ($this->discord->hasString($message, 'чек')) {
+                    if ($this->discord->hasAttachments($message)) {
+                        $messagesWithAttachment[] = $message;
+                    } else {
+                        $messagesNoAttachment[] = $message;
+                    }
+                }
+                if ($this->discord->hasString($message, 'доход')) {
+                    $messagesIncome[] = $message;
                 }
             }
         }
@@ -51,8 +59,19 @@ class DiscordController extends Controller
         if (!empty($messagesWithAttachment)) {
             $this->processMessagesWithAttachment($messagesWithAttachment);
         }
+
+        if (!empty($messagesIncome)) {
+            $this->processMessagesIncome($messagesIncome);
+        }
     }
 
+    /**
+     * Обрабатывает сообщения-чеки с текстовыми данными.
+     *
+     * @param array $messages Массив сообщений без вложенияй.
+     * @return void
+     * @throws GuzzleException
+     */
     private function processMessagesNoAttachment(array $messages): void
     {
         foreach ($messages as $message) {
@@ -133,7 +152,10 @@ class DiscordController extends Controller
     }
 
     /**
-     * @throws \Exception
+     * Обрабатывает сообщения-чеки с вложениями.
+     *
+     * @param array $messages Массив сообщений с вложениями.
+     * @return void
      * @throws GuzzleException
      */
     private function processMessagesWithAttachment(array $messages): void
@@ -141,7 +163,6 @@ class DiscordController extends Controller
         foreach ($messages as $message) {
             $user = User::query()->where('discord_name', $message['author']['username'])->first();
             $user_id = $user?->id;
-
             $this->discord->addReaction($message['id'], '👀');
 
             try {
@@ -174,6 +195,54 @@ class DiscordController extends Controller
                 $this->discord->addReaction($message['id'], '👍');
             } catch (Exception $e) {
                 Log::error("Error processing message attachment: " . $e->getMessage());
+                $this->discord->addReaction($message['id'], '👎');
+            }
+        }
+    }
+
+    /**
+     * Обрабатывает сообщения о доходе и сохраняет их в базе данных.
+     *
+     * @param array $messages Массив сообщений о доходе.
+     * @return void
+     * @throws GuzzleException
+     */
+    private function processMessagesIncome(array $messages): void
+    {
+        foreach ($messages as $message) {
+            $user = User::query()->where('discord_name', $message['author']['username'])->first();
+            $user_id = $user?->id;
+
+            try {
+                $this->discord->addReaction($message['id'], '👀');
+
+                $lines = explode("\n", $message['content']);
+                array_shift($lines);
+
+                $parts = explode(',', $lines[0]);
+                $parts = array_map('trim', $parts);
+
+                $amount = 0;
+
+                foreach ($parts as $part) {
+                    if (str_contains($part, 'руб')) {
+                        $amount = (int) filter_var($part, FILTER_SANITIZE_NUMBER_INT);
+                        break;
+                    }
+                }
+                $subcategory_id = Subcategory::query()->where('name', $parts[0])->value('id');
+
+                if ($subcategory_id) {
+                    $income = new Income();
+                    $income->user_id = $user_id;
+                    $income->subcategory_id = $subcategory_id;
+                    $income->amount = $amount;
+                    $income->save();
+                    $this->discord->addReaction($message['id'], '👍');
+                } else {
+                    $this->discord->addReaction($message['id'], '👎');
+                }
+            } catch (\Exception $e) {
                 $this->discord->addReaction($message['id'], '👎');
             }
         }
