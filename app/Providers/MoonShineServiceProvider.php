@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\Jobs;
 use App\Models\Receipts;
 use App\Models\ReceiptsData;
+use App\MoonShine\Pages\DiscordPage;
 use App\MoonShine\Pages\InfoPage;
 use App\MoonShine\Resources\AutoInsuranceResource;
 use App\MoonShine\Resources\AutoResource;
@@ -58,14 +59,18 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
     {
         return [
             MenuGroup::make(static fn() => __('moonshine::ui.resource.system'), [
-               MenuItem::make(
-                   static fn() => __('moonshine::ui.resource.admins_title'),
-                   new MoonShineUserResource()
-               ),
-               MenuItem::make(
-                   static fn() => __('moonshine::ui.resource.role_title'),
-                   new MoonShineUserRoleResource()
-               ),
+                MenuItem::make(
+                    static fn() => __('moonshine::ui.resource.admins_title'),
+                    new MoonShineUserResource()
+                ),
+                MenuItem::make(
+                    static fn() => __('moonshine::ui.resource.role_title'),
+                    new MoonShineUserRoleResource()
+                ),
+                MenuItem::make(
+                    'Discord Bot Info',
+                    new DiscordPage()
+                ),
             ]),
             MenuGroup::make('Чеки', [
                 MenuItem::make(

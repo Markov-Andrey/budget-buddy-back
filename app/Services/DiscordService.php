@@ -20,8 +20,8 @@ class DiscordService
             ],
         ]);
 
-        $this->apiUrl = 'https://discord.com/api/v10/';
-        $this->channelId = '1245678879151095861';
+        $this->apiUrl = env('DISCORD_API_URL');
+        $this->channelId = env('DISCORD_CHAT_ID');
     }
 
     /**
