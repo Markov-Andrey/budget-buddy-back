@@ -126,6 +126,12 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'discord' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/discord.log'),
+            'level' => 'info',
+        ],
     ],
 
 ];

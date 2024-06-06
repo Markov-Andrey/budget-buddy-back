@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\DiscordProcessJob;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class DiscordAdd extends Command
 {
@@ -21,5 +22,6 @@ class DiscordAdd extends Command
         $discordJob->handle();
 
         $this->info('Discord jobs processed successfully.');
+        Log::channel('discord')->info('Discord jobs processed successfully.');
     }
 }

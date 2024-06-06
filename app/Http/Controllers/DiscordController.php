@@ -66,9 +66,9 @@ class DiscordController extends Controller
 
         $count = count($messagesNoAttachment) + count($messagesWithAttachment) + count($messagesIncome);
         if ($count > 0) {
-            Log::info("Received $count items from Discord.");
+            Log::channel('discord')->info(`Received {$count} items from Discord.`);
         } else {
-            Log::info('Received empty array from Discord.');
+            Log::channel('discord')->info('Received empty array from Discord.');
         }
     }
 
@@ -150,10 +150,11 @@ class DiscordController extends Controller
                 DB::commit();
 
                 $this->discord->addReaction($message['id'], '👍');
+                Log::channel('discord')->info('MessagesNoAttachment processed successfully: ' . $message['id']);
             } catch (Exception $e) {
                 DB::rollBack();
-                Log::error("Error processing message: " . $e->getMessage());
                 $this->discord->addReaction($message['id'], '👎');
+                Log::error("Error processing MessagesNoAttachment: " . $e->getMessage());
             }
         }
     }
@@ -200,8 +201,9 @@ class DiscordController extends Controller
                 }
 
                 $this->discord->addReaction($message['id'], '👍');
+                Log::channel('discord')->info('MessagesWithAttachment processed successfully: ' . $message['id']);
             } catch (Exception $e) {
-                Log::error("Error processing message attachment: " . $e->getMessage());
+                Log::channel('discord')->error("Error processing message attachment: " . $e->getMessage());
                 $this->discord->addReaction($message['id'], '👎');
             }
         }
@@ -246,11 +248,14 @@ class DiscordController extends Controller
                     $income->amount = $amount;
                     $income->save();
                     $this->discord->addReaction($message['id'], '👍');
+                    Log::channel('discord')->info('Income processed successfully: ' . $message['id']);
                 } else {
                     $this->discord->addReaction($message['id'], '👎');
+                    Log::channel('discord')->error('Income processing failed: ' . $message['id']);
                 }
             } catch (\Exception $e) {
                 $this->discord->addReaction($message['id'], '👎');
+                Log::channel('discord')->error('Income processing failed: ' . $message['id'] . ': ' . $e->getMessage());
             }
         }
     }
