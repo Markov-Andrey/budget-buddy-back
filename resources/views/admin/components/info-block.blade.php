@@ -39,6 +39,7 @@
                 'autoData' => $autoData,
                 'subCategoriesDataAuto' => $subCategoriesDataAuto,
                 'subCategoriesData' => $subCategoriesData,
+                'subCategoriesDataPermanent' => $subCategoriesDataPermanent,
                 'user' => $user
             ])->render(),
         ]"

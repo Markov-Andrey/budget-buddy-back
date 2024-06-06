@@ -20,8 +20,9 @@ final class InfoBlock extends MoonShineComponent
     protected mixed $users;
     protected mixed $data;
     protected mixed $categoriesData;
-    private array $subCategoriesData;
+    private array $subCategoriesDataProducts;
     private array $subCategoriesDataAuto;
+    private array $subCategoriesDataPermanent;
     private mixed $amountData;
     private mixed $autoData;
     private mixed $incomeAverage;
@@ -33,8 +34,9 @@ final class InfoBlock extends MoonShineComponent
         $this->user = $id ? User::query()->findOrFail($id) : null;
         $this->users = User::all();
 
-        $this->subCategoriesData = Receipts::calculatePricesBySubcategory($id, 'Продукты');
+        $this->subCategoriesDataProducts = Receipts::calculatePricesBySubcategory($id, 'Продукты');
         $this->subCategoriesDataAuto = Receipts::calculatePricesBySubcategory($id, 'Автомобиль');
+        $this->subCategoriesDataPermanent = Receipts::calculatePricesBySubcategory($id, 'Постоянные');
         $this->categoriesData = Receipts::calculatePricesByCategory($id);
         $this->amountData = Income::calculateByCategory($id);
         $this->amountData = Income::calculateByCategory($id);
@@ -54,8 +56,9 @@ final class InfoBlock extends MoonShineComponent
             'users' => $this->users,
             'user' => $this->user,
             'categoriesData' => $this->categoriesData,
-            'subCategoriesData' => $this->subCategoriesData,
+            'subCategoriesData' => $this->subCategoriesDataProducts,
             'subCategoriesDataAuto' => $this->subCategoriesDataAuto,
+            'subCategoriesDataPermanent' => $this->subCategoriesDataPermanent,
             'amountData' => $this->amountData,
             'autoData' => $this->autoData,
             'incomeAverage' => $this->incomeAverage,
