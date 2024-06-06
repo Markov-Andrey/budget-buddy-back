@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Components;
 
-use Closure;
-use Illuminate\Contracts\View\View;
 use MoonShine\Components\MoonShineComponent;
 
 /**
