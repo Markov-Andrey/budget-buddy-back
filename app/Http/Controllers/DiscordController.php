@@ -27,7 +27,7 @@ class DiscordController extends Controller
     /**
      * Обработчик сообщений из Discord.
      *
-     * @return void
+     * @return int
      * @throws GuzzleException
      */
     public function index(): void
@@ -62,6 +62,13 @@ class DiscordController extends Controller
 
         if (!empty($messagesIncome)) {
             $this->processMessagesIncome($messagesIncome);
+        }
+
+        $count = count($messagesNoAttachment) + count($messagesWithAttachment) + count($messagesIncome);
+        if ($count > 0) {
+            Log::info("Received $count items from Discord.");
+        } else {
+            Log::info('Received empty array from Discord.');
         }
     }
 

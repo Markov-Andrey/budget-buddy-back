@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 class DiscordAdd extends Command
 {
     protected $signature = 'discord:add';
-    protected $description = 'Обработка новых изображений из Discord';
+    protected $description = 'Обработка команд из Discord';
 
     public function __construct()
     {
@@ -17,7 +17,8 @@ class DiscordAdd extends Command
 
     public function handle()
     {
-        DiscordProcessJob::dispatch();
+        $discordJob = new DiscordProcessJob();
+        $discordJob->handle();
 
         $this->info('Discord jobs processed successfully.');
     }

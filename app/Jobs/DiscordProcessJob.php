@@ -29,34 +29,6 @@ class DiscordProcessJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $items = (new DiscordController)->index();
-        foreach ($items as $item) {
-            $user = User::where('discord_name', $item['author']['global_name'])->first();
-
-            if ($user) {
-                $userId = $user->id;
-
-                if ($item['attachments']) {
-                    foreach ($item['attachments'] as $attachment) {
-                        // Извлечение имени файла и расширения с помощью регулярного выражения, очистка от параметров
-                        if (preg_match('/\/([^\/?#]+)\.(png|jpe?g|gif)(?:$|\?|#)/i', $attachment['proxy_url'], $matches)) {
-                            $originalFileName = $matches[1];
-                            $extension = $matches[2];
-                            $relativePath = 'public/receipts/' . $originalFileName . '.' . $extension;
-                            $contents = file_get_contents($attachment['proxy_url']);
-
-                            if ($contents !== false) {
-                                Storage::put($relativePath, $contents);
-
-                                Receipts::create([
-                                    'user_id' => $userId,
-                                    'image_path' => 'receipts/' . $originalFileName . '.' . $extension,
-                                ]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        (new DiscordController)->index();
     }
 }
