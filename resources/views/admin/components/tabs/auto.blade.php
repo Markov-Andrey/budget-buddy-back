@@ -1,11 +1,34 @@
 <div>
     @if($user)
         @if (!empty($autoData))
-            <div>
-                {!!
-                MoonShine\Metrics\DonutChartMetric::make('Общее по авто')
-                    ->values($subCategoriesDataAuto['details'])
-                !!}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    {!!
+                    MoonShine\Metrics\DonutChartMetric::make('Общее по авто')
+                        ->values($subCategoriesDataAuto['details'])
+                    !!}
+                </div>
+                <div>
+                    <table>
+                        <thead>
+                        <td>Субкатегория</td>
+                        <td>Цена</td>
+                        <td>Доля</td>
+                        </thead>
+                        @foreach($subCategoriesDataAuto['details'] as $key => $value)
+                            <tr>
+                                <td>{{ $key }}</td>
+                                <td>{{ number_format($value, 2, '.', '') }}</td>
+                                <td>{{ number_format($value / $subCategoriesDataAuto['total'] * 100, 2, '.', '') }}</td>
+                            </tr>
+                        @endforeach
+                        <tfoot>
+                        <td>Всего</td>
+                        <td>{{ $subCategoriesDataAuto['total'] }}</td>
+                        <td>100</td>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
             @foreach ($autoData as $car)
                 <div style="margin-bottom: 20px;">
