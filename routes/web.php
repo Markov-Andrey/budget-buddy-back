@@ -14,9 +14,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/discord', function () {
-    (new App\Http\Controllers\DiscordController)->index();
+    $discord = new App\Services\DiscordService;
+    $discord->sendMessage('Привет, это тестовое сообщение от совы!');
 
-    return 'discord final';
+    return '+';
 });
 
 Route::get('/', function () {

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Log;
 
 class DiscordService
 {
@@ -14,6 +15,7 @@ class DiscordService
     public function __construct()
     {
         $this->client = new Client([
+            'base_uri' => rtrim(env('DISCORD_API_URL'), '/') . '/',
             'headers' => [
                 'Authorization' => 'Bot ' . env('DISCORD_API_BOT_TOKEN'),
                 'Content-Type' => 'application/json',
@@ -40,6 +42,24 @@ class DiscordService
         ]);
 
         return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * Отправляет сообщение в канал Discord.
+     *
+     * @param string $message Текст сообщения
+     */
+    public function sendMessage(string $message): void
+    {
+        try {
+            $this->client->post('channels/' . $this->channelId . '/messages', [
+                'json' => [
+                    'content' => $message,
+                ],
+            ]);
+        } catch (GuzzleException $e) {
+            Log::channel('discord')->error('Error sending message to Discord: ' . $e->getMessage());
+        }
     }
 
     /**

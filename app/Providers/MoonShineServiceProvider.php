@@ -13,6 +13,7 @@ use App\MoonShine\Resources\AutoInsuranceResource;
 use App\MoonShine\Resources\AutoResource;
 use App\MoonShine\Resources\AutoTechnicalInspectionResource;
 use App\MoonShine\Resources\CategoriesResource;
+use App\MoonShine\Resources\DiscordMessageResource;
 use App\MoonShine\Resources\GroupMembershipsResource;
 use App\MoonShine\Resources\GroupsResource;
 use App\MoonShine\Resources\IncomeResource;
@@ -67,9 +68,15 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                     static fn() => __('moonshine::ui.resource.role_title'),
                     new MoonShineUserRoleResource()
                 ),
+            ]),
+            MenuGroup::make('Discord', [
                 MenuItem::make(
                     'Discord Bot Info',
                     new DiscordPage()
+                ),
+                MenuItem::make(
+                    'Messages',
+                    new DiscordMessageResource()
                 ),
             ]),
             MenuGroup::make('Чеки', [

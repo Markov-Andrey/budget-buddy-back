@@ -15,9 +15,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategoriesAutoTableSeeder::class,
             CategoriesBadHabitsTableSeeder::class,
+            CategoriesFixExpensesTableSeeder::class,
             CategoriesIncomeTableSeeder::class,
             CategoriesProductTableSeeder::class,
             CategoriesSpecialTableSeeder::class,
+            DiscordMessageAcceptSeeder::class,
         ]);
     }
 }

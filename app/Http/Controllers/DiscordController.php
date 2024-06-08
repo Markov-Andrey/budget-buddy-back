@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DiscordMessage;
 use App\Models\Income;
 use App\Models\Receipts;
 use App\Models\ReceiptsData;
@@ -27,7 +28,7 @@ class DiscordController extends Controller
     /**
      * Обработчик сообщений из Discord.
      *
-     * @return int
+     * @return void
      * @throws GuzzleException
      */
     public function index(): void
@@ -37,17 +38,19 @@ class DiscordController extends Controller
         $messagesWithAttachment = [];
         $messagesIncome = [];
 
-        foreach ($messages as $message) {
-            if (!$this->discord->hasReaction($message, '👀') && $this->discord->hasString($message, 'Афи')) {
-                if ($this->discord->hasString($message, 'чек')) {
-                    if ($this->discord->hasAttachments($message)) {
-                        $messagesWithAttachment[] = $message;
-                    } else {
-                        $messagesNoAttachment[] = $message;
+        if (!empty($messages)) {
+            foreach ($messages as $message) {
+                if (!$this->discord->hasReaction($message, '👀') && $this->discord->hasString($message, 'Афи')) {
+                    if ($this->discord->hasString($message, 'чек')) {
+                        if ($this->discord->hasAttachments($message)) {
+                            $messagesWithAttachment[] = $message;
+                        } else {
+                            $messagesNoAttachment[] = $message;
+                        }
                     }
-                }
-                if ($this->discord->hasString($message, 'доход')) {
-                    $messagesIncome[] = $message;
+                    if ($this->discord->hasString($message, 'доход')) {
+                        $messagesIncome[] = $message;
+                    }
                 }
             }
         }
@@ -66,8 +69,12 @@ class DiscordController extends Controller
 
         $count = count($messagesNoAttachment) + count($messagesWithAttachment) + count($messagesIncome);
         if ($count > 0) {
+            $message = DiscordMessage::getRandomMessageByCode('accept');
+            if ($message) $this->discord->sendMessage($message);
             Log::channel('discord')->info(`Received {$count} items from Discord.`);
         } else {
+            $message = DiscordMessage::getRandomMessageByCode('no_requests');
+            if ($message) $this->discord->sendMessage($message);
             Log::channel('discord')->info('Received empty array from Discord.');
         }
     }
