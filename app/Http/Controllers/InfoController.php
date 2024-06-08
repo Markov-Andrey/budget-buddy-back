@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Auto;
 use App\Models\Income;
 use App\Models\Receipts;
 use Illuminate\Support\Facades\Auth;
@@ -44,5 +45,34 @@ class InfoController extends Controller
             'income' => $incomeAverage,
             'loss' => $lossAverage,
         ], 200);
+    }
+
+    public function personal(): \Illuminate\Http\JsonResponse
+    {
+        $user = auth()->user();
+        $id = $user->id;
+
+        $subCategoriesDataProducts = Receipts::calculatePricesBySubcategory($id, 'Продукты');
+        $subCategoriesDataAuto = Receipts::calculatePricesBySubcategory($id, 'Автомобиль');
+        $subCategoriesDataPermanent = Receipts::calculatePricesBySubcategory($id, 'Постоянные');
+        $categoriesData = Receipts::calculatePricesByCategory($id);
+        $amountData = Income::calculateByCategory($id);
+        $incomeAverage = Income::averageMonthlyLastYear($id);
+        $lossAverage = Receipts::averageMonthlyLastYear($id);
+        $autoData = Auto::getAutoDataByUserId($id);
+
+        // Соберем всю информацию в массив
+        $userInfo = [
+            'subCategoriesDataProducts' => $subCategoriesDataProducts,
+            'subCategoriesDataAuto' => $subCategoriesDataAuto,
+            'subCategoriesDataPermanent' => $subCategoriesDataPermanent,
+            'categoriesData' => $categoriesData,
+            'amountData' => $amountData,
+            'incomeAverage' => $incomeAverage,
+            'lossAverage' => $lossAverage,
+            'autoData' => $autoData,
+        ];
+
+        return response()->json($userInfo);
     }
 }
