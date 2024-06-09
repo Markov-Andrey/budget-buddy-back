@@ -6,7 +6,6 @@ use App\Models\Auto;
 use App\Models\Income;
 use App\Models\Receipts;
 use App\Models\ReceiptsData;
-use App\Services\ChartDataService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -79,6 +78,52 @@ class InfoController extends Controller
         return response()->json($userInfo);
     }
 
+    /**
+     * @OA\Get(
+     *      path="/api/info/running-costs",
+     *      operationId="getRunningCostsInfo",
+     *      tags={"Balance"},
+     *      summary="Получить информацию о текущих расходах",
+     *      description="Возвращает информацию о текущих расходах пользователя за выбранный месяц.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Успешный запрос. Возвращает информацию о текущих расходах пользователя.",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              properties={
+     *                  @OA\Property(
+     *                      property="dailyExpenses",
+     *                      type="number",
+     *                      description="Сумма расходов за каждый день текущего месяца"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="cumulativeExpensesArray",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          type="number",
+     *                          description="Массив кумулятивных расходов за каждый день текущего месяца"
+     *                      ),
+     *                  ),
+     *                  @OA\Property(
+     *                      property="incomeAverage",
+     *                      type="number",
+     *                      description="Средний ежемесячный доход за последний год"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="lossAverage",
+     *                      type="number",
+     *                      description="Средние ежемесячные расходы за последний год"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="topPriceItem",
+     *                      type="number",
+     *                      description="Список самых дорогих покупок пользователя за последний месяц"
+     *                  )
+     *              }
+     *          )
+     *      )
+     * )
+     */
     public function runningCosts(): JsonResponse
     {
         $user = auth()->user();

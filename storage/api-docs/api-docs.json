@@ -39,6 +39,12 @@
                                         "format": "email",
                                         "example": "swagger@example.com"
                                     },
+                                    "discord_name": {
+                                        "description": "Global name in discord",
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "DiscordName"
+                                    },
                                     "password": {
                                         "description": "User's password (min: 8 characters)",
                                         "type": "string",
@@ -208,7 +214,7 @@
                     "Balance"
                 ],
                 "summary": "Получить информацию о балансе пользователя",
-                "description": "Этот эндпоинт позволяет получить информацию о балансе пользователя, включая доход, расход и текущий баланс.",
+                "description": "Этот эндпоинт позволяет получить информацию о балансе пользователя, включая среднемесячный доход и среднемесячные траты за последний год.",
                 "operationId": "getBalanceInfo",
                 "responses": {
                     "200": {
@@ -218,15 +224,15 @@
                                 "schema": {
                                     "properties": {
                                         "income": {
+                                            "description": "Среднемесячный доход за последний год.",
                                             "type": "number",
+                                            "format": "float",
                                             "example": "1000.00"
                                         },
                                         "loss": {
+                                            "description": "Среднемесячные траты за последний год.",
                                             "type": "number",
-                                            "example": "500.00"
-                                        },
-                                        "balance": {
-                                            "type": "number",
+                                            "format": "float",
                                             "example": "500.00"
                                         }
                                     },
@@ -257,6 +263,53 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/info/running-costs": {
+            "get": {
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Получить информацию о текущих расходах",
+                "description": "Возвращает информацию о текущих расходах пользователя за выбранный месяц.",
+                "operationId": "getRunningCostsInfo",
+                "responses": {
+                    "200": {
+                        "description": "Успешный запрос. Возвращает информацию о текущих расходах пользователя.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "dailyExpenses": {
+                                            "description": "Сумма расходов за каждый день текущего месяца",
+                                            "type": "number"
+                                        },
+                                        "cumulativeExpensesArray": {
+                                            "type": "array",
+                                            "items": {
+                                                "description": "Массив кумулятивных расходов за каждый день текущего месяца",
+                                                "type": "number"
+                                            }
+                                        },
+                                        "incomeAverage": {
+                                            "description": "Средний ежемесячный доход за последний год",
+                                            "type": "number"
+                                        },
+                                        "lossAverage": {
+                                            "description": "Средние ежемесячные расходы за последний год",
+                                            "type": "number"
+                                        },
+                                        "topPriceItem": {
+                                            "description": "Список самых дорогих покупок пользователя за последний месяц",
+                                            "type": "number"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/receipts/add": {
@@ -557,6 +610,11 @@
                         "type": "string",
                         "format": "email",
                         "example": "john@example.com"
+                    },
+                    "discord_name": {
+                        "type": "string",
+                        "format": "string",
+                        "example": "DiscordName"
                     },
                     "created_at": {
                         "type": "string",
