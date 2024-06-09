@@ -1,7 +1,8 @@
-![Лого проекта](https://github.com/путь_к_изображению/logo.png)
+<img src="https://github.com/Markov-Andrey/budget-buddy-back/raw/master/public/images/owl_hd.png" alt="Лого проекта" height="300" width="auto">
 
-🇺🇸 English Version
 # 🦉💰 Owl-Budget
+
+# 🇺🇸 English Version
 ## Your Nest for Financial Stability!
 A project for those who manage their financial flows and want pinpoint accuracy in budget planning.
 
@@ -15,8 +16,7 @@ A project for those who manage their financial flows and want pinpoint accuracy 
 
 ---
 
-🇷🇺 Русская версия
-# 🦉💰 Owl-Budget
+# 🇷🇺 Русская версия
 ## Гнездышко финансового благополучия!
 Проект для тех, кто управляет своими денежными потоками и хочет ювелирной точности в планировании бюджета
 
