@@ -52,7 +52,6 @@ php artisan migrate
 ```
 php artisan db:seed
 ```
-php artisan bd seed
 
 ### Start the web server
 ```
