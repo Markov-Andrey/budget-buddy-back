@@ -29,6 +29,8 @@ A project for those who manage their financial flows and want pinpoint accuracy 
 - Этот проект все еще находится в разработке, и некоторые функции могут быть недоступны или работать некорректно.
 
 ## Project setup
+![Moonshine GitHub](https://avatars.githubusercontent.com/u/129834687?s=48&v=4)
+Created using the Moonshine admin panel: [Moonshine GitHub](https://github.com/moonshine-software/moonshine)
 ### Install dependencies using Composer
 ```
 composer install
@@ -38,12 +40,14 @@ Copy the .env file and fill in the necessary environment variables
 - Configure Discord bot settings.
 - Set Gemini AI API key.
 
-
 ### Generate a Laravel application key
 ```
 php artisan key:generate
 ```
-
+### Add a new admin for the admin panel
+```
+php artisan moonshine:user
+```
 ### Run migrations to create necessary database tables
 ```
 php artisan migrate
@@ -52,10 +56,8 @@ php artisan migrate
 ```
 php artisan db:seed
 ```
-
 ### Start the web server
 ```
 php artisan serve
 ```
-
-
+### Utilize Swagger documentation for exploring the project
