@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/discord', function () {
-    $discord = new App\Services\DiscordService;
-    $discord->sendMessage('Привет, это тестовое сообщение от совы!');
+Route::get('/test', function () {
+    $test1 = \App\Models\ReceiptsData::topItems(1);
+    dd($test1);
 
     return '+';
 });

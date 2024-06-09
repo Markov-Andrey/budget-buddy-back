@@ -37,4 +37,5 @@ Route::prefix('receipts')->group(function () {
 Route::prefix('info')->group(function () {
     Route::get('/balance', [InfoController::class, 'balance'])->middleware('auth:sanctum');
     Route::get('/personal', [InfoController::class, 'personal'])->middleware('auth:sanctum');
+    Route::get('/running-costs', [InfoController::class, 'runningCosts'])->middleware('auth:sanctum');
 });

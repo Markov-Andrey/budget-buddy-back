@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Services\DateService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ReceiptsData extends Model
 {
@@ -42,6 +46,39 @@ class ReceiptsData extends Model
     public function morph()
     {
         return $this->morphTo();
+    }
+
+    public static function topItems($user_id, $date = null, $max = true)
+    {
+        // Получаем диапазон месяца
+        $monthRange = DateService::monthRange($date);
+        $startOfMonth = $monthRange['start'];
+        $endOfMonth = $monthRange['end'];
+
+        // Определяем сортировку для запроса
+        $orderDirection = $max ? 'DESC' : 'ASC';
+
+        $query = DB::table('receipts_data')
+            ->select('receipts_data.name', 'receipts_data.price', 'receipts_data.weight')
+            ->join('receipts', 'receipts.id', '=', 'receipts_data.receipts_id')
+            ->where('receipts.user_id', $user_id)
+            ->whereBetween('receipts.datetime', [$startOfMonth, $endOfMonth])
+            ->whereNotNull('receipts_data.price') // Фильтр на записи с ценой
+            ->orderBy('receipts_data.price', $orderDirection)
+            ->limit(10);
+
+        $topItems = $query->get();
+
+        // Преобразуем коллекцию к обычному массиву
+        $topItemsArray = $topItems->toArray();
+
+        // Вручную сортируем массив по полю "price"
+        usort($topItemsArray, function ($a, $b) use ($orderDirection) {
+            return $orderDirection == 'DESC' ? $b->price <=> $a->price : $a->price <=> $b->price;
+        });
+
+        // Преобразуем отсортированный массив обратно в коллекцию
+        return new Collection($topItemsArray);
     }
 
     public static function formattedData($item) {

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Services\DateService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @OA\Schema(
@@ -231,13 +233,51 @@ class Receipts extends Model
         return (new Receipts)->getAmountAttribute($averageMonthlyIncome);
     }
 
-    public static function sumFromStartOfMonth($user_id): float
+    /**
+    * Параметр DE - реальный расход в день.
+    * Вернуть расходы по id пользователя по дням месяца
+    */
+    public static function amountByDayFromDate($user_id, $date = null): array
     {
-        $startOfThisMonth = now()->startOfMonth();
-        $totalAmount = self::where('user_id', $user_id)
-            ->where('created_at', '>=', $startOfThisMonth)
-            ->sum('amount');
+        $monthRange = DateService::monthRange($date);
+        $amountByDay = self::where('user_id', $user_id)
+            ->whereBetween('datetime', [$monthRange['start'], $monthRange['end']])
+            ->selectRaw('DAY(datetime) as day, CAST(SUM(amount / 100) AS DECIMAL(10,2)) as total_amount')
+            ->groupBy('day')
+            ->pluck('total_amount', 'day')
+            ->toArray();
 
-        return (new Receipts)->getAmountAttribute($totalAmount);
+        $amountByDay = array_replace(array_fill(1, $monthRange['count'], 0), $amountByDay);
+        $amountByDay = array_combine(range(0, $monthRange['count'] - 1), $amountByDay);
+
+        ksort($amountByDay);
+
+        return $amountByDay;
+    }
+
+    /**
+     * Параметр CEA - накопление расходов в течение месяца.
+     * Вернуть расходы по id пользователя по дням месяца по накопительной системе
+     */
+    public static function cumulativeAmountByDayFromDate($user_id, $date = null): array
+    {
+        $amountByDay = self::amountByDayFromDate($user_id, $date);
+        $currentDate = Carbon::parse($date)->endOfDay();
+
+        $cumulativeAmount = 0;
+
+        foreach ($amountByDay as $day => $amount) {
+            $dayDate = Carbon::parse($currentDate)->startOfMonth()->addDays($day);
+
+            if ($dayDate > $currentDate) {
+                $cumulativeAmount = null;
+            } else {
+                $cumulativeAmount += $amount;
+            }
+
+            $amountByDay[$day] = $cumulativeAmount;
+        }
+
+        return $amountByDay;
     }
 }

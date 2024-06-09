@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Auto;
 use App\Models\Income;
 use App\Models\Receipts;
+use App\Models\ReceiptsData;
+use App\Services\ChartDataService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class InfoController extends Controller
@@ -47,7 +50,7 @@ class InfoController extends Controller
         ], 200);
     }
 
-    public function personal(): \Illuminate\Http\JsonResponse
+    public function personal(): JsonResponse
     {
         $user = auth()->user();
         $id = $user->id;
@@ -71,6 +74,28 @@ class InfoController extends Controller
             'incomeAverage' => $incomeAverage,
             'lossAverage' => $lossAverage,
             'autoData' => $autoData,
+        ];
+
+        return response()->json($userInfo);
+    }
+
+    public function runningCosts(): JsonResponse
+    {
+        $user = auth()->user();
+        $id = $user->id;
+
+        $de = Receipts::amountByDayFromDate($id);
+        $cea = Receipts::cumulativeAmountByDayFromDate($id);
+        $incomeAverage = Income::averageMonthlyLastYear($id);
+        $lossAverage = Receipts::averageMonthlyLastYear($id);
+        $topPriceItem = ReceiptsData::topItems($id);
+
+        $userInfo = [
+            'dailyExpenses' => $de,
+            'cumulativeExpensesArray' => $cea,
+            'incomeAverage' => $incomeAverage,
+            'lossAverage' => $lossAverage,
+            'topPriceItem' => $topPriceItem,
         ];
 
         return response()->json($userInfo);
