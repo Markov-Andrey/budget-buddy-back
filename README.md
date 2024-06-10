@@ -38,7 +38,9 @@ composer install
 ### Copy the .env file
 Copy the .env file and fill in the necessary environment variables
 - Configure Discord bot settings.
-- Set Gemini AI API key.
+- Set Gemini AI API key (
+  API requests must be made over a VPN from a number of countries (and without the label [1])
+  https://ai.google.dev/gemini-api/docs/available-regions?hl=ru#unpaid-tier-unavailable).
 
 ### Generate a Laravel application key
 ```
