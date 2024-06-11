@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\IncomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/test', function () {
-    $test1 = \App\Models\ReceiptsData::topItems(1);
+    $test1 = IncomeController::index();
     dd($test1);
 
     return '+';
