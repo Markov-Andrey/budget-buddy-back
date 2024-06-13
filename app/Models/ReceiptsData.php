@@ -48,9 +48,8 @@ class ReceiptsData extends Model
         return $this->morphTo();
     }
 
-    public static function topItems($user_id, $date = null, $max = true)
+    public static function topItems($user_id, $date = null, $max = true, $limit = 10)
     {
-        // Получаем диапазон месяца
         $monthRange = DateService::monthRange($date);
         $startOfMonth = $monthRange['start'];
         $endOfMonth = $monthRange['end'];
@@ -63,9 +62,9 @@ class ReceiptsData extends Model
             ->join('receipts', 'receipts.id', '=', 'receipts_data.receipts_id')
             ->where('receipts.user_id', $user_id)
             ->whereBetween('receipts.datetime', [$startOfMonth, $endOfMonth])
-            ->whereNotNull('receipts_data.price') // Фильтр на записи с ценой
-            ->orderBy('receipts_data.price', $orderDirection)
-            ->limit(10);
+            ->whereNotNull('receipts_data.price')
+            ->orderByRaw('CAST(receipts_data.price AS DECIMAL(10, 2)) ' . $orderDirection)
+            ->limit($limit);
 
         $topItems = $query->get();
 
@@ -81,6 +80,70 @@ class ReceiptsData extends Model
         return new Collection($topItemsArray);
     }
 
+    /**
+     * @param $user_id
+     * @param $date
+     * @return Collection
+     * Метод сборки данных в кучку если совпадение >50%
+     * TODO требуется доработать
+     */
+    public static function getGroupedItemsByMonth($user_id, $date = null)
+    {
+        // Получаем диапазон дат для указанного месяца
+        $monthRange = DateService::monthRange($date);
+        $startOfMonth = $monthRange['start'];
+        $endOfMonth = $monthRange['end'];
+
+        // Выполняем запрос для получения всех записей за указанный период
+        $query = DB::table('receipts_data')
+            ->join('receipts', 'receipts.id', '=', 'receipts_data.receipts_id')
+            ->where('receipts.user_id', $user_id)
+            ->whereBetween('receipts.datetime', [$startOfMonth, $endOfMonth])
+            ->whereNotNull('receipts_data.price');
+
+        $items = $query->get();
+
+        // Группируем записи по имени и суммируем их значения
+        $groupedItems = [];
+
+        foreach ($items as $item) {
+            $itemAdded = false;
+
+            foreach ($groupedItems as &$group) {
+                similar_text($group['name'], $item->name, $percent);
+
+                // Используем порог в 50% схожести
+                if ($percent > 50) {
+                    // Найдем общий префикс
+                    $commonPrefix = self::getCommonPrefix($group['name'], $item->name);
+
+                    // Обновляем имя группы, если длина общего префикса больше минимальной длины (например, 3 символа)
+                    if (mb_strlen($commonPrefix) >= 3) {
+                        $group['name'] = $commonPrefix;
+                    }
+
+                    $group['total_price'] += (float) $item->price;
+                    $group['total_weight'] += $item->weight;
+                    $group['count'] += 1;
+                    $itemAdded = true;
+                    break;
+                }
+            }
+
+            if (!$itemAdded) {
+                $groupedItems[] = [
+                    'name' => $item->name,
+                    'total_price' => (float) $item->price,
+                    'total_weight' => $item->weight,
+                    'count' => 1,
+                ];
+            }
+        }
+
+        // Преобразуем сгруппированные элементы в коллекцию
+        return collect($groupedItems);
+    }
+
     public static function formattedData($item) {
         $name = $item->name ?? '-';
         $subcategoryName = $item->subcategory ? $item->subcategory->name : '-';
@@ -89,5 +152,23 @@ class ReceiptsData extends Model
         $weight = $item->weight ?? '-';
 
         return "{$name} ({$subcategoryName}) - {$quantity} ({$weight}) - {$price}";
+    }
+
+    private static function getCommonPrefix($str1, $str2)
+    {
+        $len1 = mb_strlen($str1);
+        $len2 = mb_strlen($str2);
+        $minLen = min($len1, $len2);
+        $prefix = '';
+
+        for ($i = 0; $i < $minLen; $i++) {
+            if (mb_substr($str1, $i, 1) === mb_substr($str2, $i, 1)) {
+                $prefix .= mb_substr($str1, $i, 1);
+            } else {
+                break;
+            }
+        }
+
+        return $prefix;
     }
 }

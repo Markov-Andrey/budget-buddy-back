@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/test', function () {
-    $test1 = IncomeController::index();
+    $test1 = \App\Models\ReceiptsData::getGroupedItemsByMonth(1);
     dd($test1);
 
     return '+';

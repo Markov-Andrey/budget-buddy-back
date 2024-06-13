@@ -25,7 +25,6 @@ class IncomeController extends Controller
         ]);
     }
 
-    // Создание нового элемента
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -53,16 +52,16 @@ class IncomeController extends Controller
             'subcategory_id' => 'sometimes|required|exists:subcategories,id',
             'amount' => 'sometimes|required|numeric',
         ]);
-
         $income->update($validated);
+
         return response()->json($income);
     }
 
     // Удаление элемента
-    public function destroy($id)
+    public function destroy(Income $income)
     {
-        $income = Income::findOrFail($id);
         $income->delete();
+
         return response()->json(null, 204);
     }
 }
