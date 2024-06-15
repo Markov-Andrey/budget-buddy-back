@@ -18,7 +18,9 @@ class IncomeController extends Controller
             ->where('categories.name', 'Доход')
             ->get();
 
-        $incomes = Income::where('user_id', $user->id)->paginate(10);
+        $incomes = Income::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
         return response()->json([
             'incomes' => $incomes,
             'subcategories' => $subcategories,
