@@ -2,22 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreIncomeRequest;
+use App\Http\Requests\UpdateIncomeRequest;
 use App\Models\Income;
 use App\Models\Subcategory;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class IncomeController extends Controller
 {
-    public static function index()
+    public static function index(): \Illuminate\Http\JsonResponse
     {
         $user = Auth::user();
-        $subcategories = Subcategory::select('subcategories.id', 'subcategories.name')
+        $subcategories = Subcategory::query()
+            ->select('subcategories.id', 'subcategories.name')
             ->join('categories', 'subcategories.category_id', '=', 'categories.id')
             ->where('categories.name', 'Доход')
             ->get();
 
-        $incomes = Income::where('user_id', $user->id)
+        $incomes = Income::query()
+            ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         return response()->json([
@@ -26,42 +29,32 @@ class IncomeController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreIncomeRequest $request): \Illuminate\Http\JsonResponse
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'subcategory_id' => 'required|exists:subcategories,id',
-            'amount' => 'required|numeric',
-        ]);
+        $id = Auth::id();
 
+        $validated = $request->validated();
+        $validated['user_id'] = $id;
         $income = Income::create($validated);
+
         return response()->json($income, 201);
     }
 
-    public function show($id)
+    public function update(UpdateIncomeRequest $request, Income $item): \Illuminate\Http\JsonResponse
     {
-        $income = Income::findOrFail($id);
-        return response()->json($income);
+        $id = Auth::id();
+
+        $validated = $request->validated();
+        $validated['user_id'] = $id;
+
+        $item->update($validated);
+
+        return response()->json($item, 200);
     }
 
-    public function update(Request $request, $id)
+    public function destroy(Income $item): \Illuminate\Http\JsonResponse
     {
-        $income = Income::findOrFail($id);
-
-        $validated = $request->validate([
-            'user_id' => 'sometimes|required|exists:users,id',
-            'subcategory_id' => 'sometimes|required|exists:subcategories,id',
-            'amount' => 'sometimes|required|numeric',
-        ]);
-        $income->update($validated);
-
-        return response()->json($income);
-    }
-
-    // Удаление элемента
-    public function destroy(Income $income)
-    {
-        $income->delete();
+        $item->delete();
 
         return response()->json(null, 204);
     }

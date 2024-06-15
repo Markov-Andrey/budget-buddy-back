@@ -36,6 +36,9 @@ Route::prefix('receipts')->group(function () {
 
 Route::prefix('income')->group(function () {
     Route::get('/index', [IncomeController::class, 'index'])->middleware('auth:sanctum');
+    Route::post('/store', [IncomeController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('/update/{item}', [IncomeController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/delete/{item}', [IncomeController::class, 'destroy'])->middleware('auth:sanctum');
 });
 
 Route::prefix('info')->group(function () {
