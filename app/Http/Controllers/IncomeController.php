@@ -5,27 +5,27 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreIncomeRequest;
 use App\Http\Requests\UpdateIncomeRequest;
 use App\Models\Income;
-use App\Models\Subcategory;
 use Illuminate\Support\Facades\Auth;
 
 class IncomeController extends Controller
 {
-    public static function index(): \Illuminate\Http\JsonResponse
+    public static function show($limit = 25): \Illuminate\Http\JsonResponse
     {
-        $user = Auth::user();
-        $subcategories = Subcategory::query()
-            ->select('subcategories.id', 'subcategories.name')
-            ->join('categories', 'subcategories.category_id', '=', 'categories.id')
-            ->where('categories.name', 'Доход')
+        $id = Auth::id();
+
+        $totalItems = Income::query()
+            ->where('user_id', $id)
+            ->count();
+
+        $incomeData = Income::query()
+            ->where('user_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
             ->get();
 
-        $incomes = Income::query()
-            ->where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
         return response()->json([
-            'incomes' => $incomes,
-            'subcategories' => $subcategories,
+            'incomeData' => $incomeData,
+            'totalItems' => $totalItems,
         ]);
     }
 

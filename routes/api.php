@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ReceiptsController;
@@ -35,10 +36,14 @@ Route::prefix('receipts')->group(function () {
 });
 
 Route::prefix('income')->group(function () {
-    Route::get('/index', [IncomeController::class, 'index'])->middleware('auth:sanctum');
+    Route::get('/show/{limit}', [IncomeController::class, 'show'])->middleware('auth:sanctum');
     Route::post('/store', [IncomeController::class, 'store'])->middleware('auth:sanctum');
     Route::put('/update/{item}', [IncomeController::class, 'update'])->middleware('auth:sanctum');
     Route::delete('/delete/{item}', [IncomeController::class, 'destroy'])->middleware('auth:sanctum');
+});
+
+Route::prefix('category')->group(function () {
+    Route::get('/get-income', [CategoryController::class, 'getIncome']);
 });
 
 Route::prefix('info')->group(function () {
