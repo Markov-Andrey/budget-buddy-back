@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use App\Models\ReceiptsData;
@@ -36,9 +35,10 @@ class ProcessReceiptJobs implements ShouldQueue
             $response = Gemini::generateTextUsingImageFile('image/jpeg', $filePath, $prompt);
             Log::info('API Receipt processing result: ' . $response);
             $defaultStructure = config('api.check_processing.default_structure');
+            // сервис нормализации данных, если полученные данные битые и не соответствуют формату
             $data = ApiResponseStabilizeService::getInfo($response, $defaultStructure);
 
-            $this->processDatetime($data);
+            $this->processDatetime();
             $this->processAddress($data);
             $this->processItems($data);
 
@@ -54,6 +54,13 @@ class ProcessReceiptJobs implements ShouldQueue
         }
     }
 
+    /**
+     * @return void
+     *
+     * Метод сборки времени.
+     * Gemini AI плохо работает со временем, меняем на created_at
+     * Предположительно заменить на дату из фото
+     */
     protected function processDatetime(array $data): void
     {
         $datetimeString = $data['data']['datetime'];
@@ -73,6 +80,12 @@ class ProcessReceiptJobs implements ShouldQueue
         }
     }
 
+    /**
+     * @param array $data
+     * @return void
+     *
+     * Метод обработки адреса из чека
+     */
     protected function processAddress(array $data): void
     {
         if (isset($data['data']['address']) && is_array($data['data']['address'])) {
@@ -86,6 +99,12 @@ class ProcessReceiptJobs implements ShouldQueue
         }
     }
 
+    /**
+     * @param array $data
+     * @return void
+     *
+     * Метод обработки товарных позиций из чека
+     */
     protected function processItems(array $data): void
     {
         if (isset($data['data']['items']) && is_array($data['data']['items'])) {
