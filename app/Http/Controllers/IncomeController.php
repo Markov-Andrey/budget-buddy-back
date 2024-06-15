@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Income;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
