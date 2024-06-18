@@ -33,20 +33,21 @@ class ProcessReceiptJobs implements ShouldQueue
 
         try {
             $response = Gemini::generateTextUsingImageFile('image/jpeg', $filePath, $prompt);
-            Log::info('API Receipt processing result: ' . $response);
+            Log::channel('gemini')->info('API Receipt processing result: ' . $response);
             $defaultStructure = config('api.check_processing.default_structure');
             // сервис нормализации данных, если полученные данные битые и не соответствуют формату
             $data = ApiResponseStabilizeService::getInfo($response, $defaultStructure);
 
-            $this->processDatetime();
+            $this->processDatetime($data);
             $this->processAddress($data);
             $this->processItems($data);
 
             $this->receipt->processed = true;
             $this->receipt->error = $data['error'] ?? false;
             $this->receipt->save();
+            Log::channel('gemini')->info('Receipt processed successfully: ' . $this->receipt->id);
         } catch (Exception $e) {
-            Log::error('API Error processing receipt: ' . $e->getMessage());
+            Log::channel('gemini')->error('API Error processing receipt: ' . $e->getMessage());
 
             $this->receipt->processed = true;
             $this->receipt->error = true;
@@ -63,20 +64,18 @@ class ProcessReceiptJobs implements ShouldQueue
      */
     protected function processDatetime(array $data): void
     {
-        $datetimeString = $data['data']['datetime'];
-        $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $datetimeString);
+        $datetimeString = $data['data']['datetime'] ?? null;
+        $datetime = $datetimeString ? DateTime::createFromFormat('Y-m-d H:i:s', $datetimeString) : false;
 
-        if ($datetime === false) {
-            Log::warning("Invalid datetime format '$datetimeString'. Using current time.");
+        if (!$datetime) {
+            Log::channel('gemini')->warning("Invalid or missing datetime format '$datetimeString'. Using current time.");
             $datetime = new DateTime('now');
         }
 
-        if (isset($data['data']['datetime'])) {
-            $receipt = Receipts::find($this->receipt->id);
-            if ($receipt) {
-                $receipt->datetime = $datetime->format('Y-m-d H:i:s');
-                $receipt->save();
-            }
+        $receipt = Receipts::find($this->receipt->id);
+        if ($receipt) {
+            $receipt->datetime = $datetime->format('Y-m-d H:i:s');
+            $receipt->save();
         }
     }
 

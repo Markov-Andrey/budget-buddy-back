@@ -132,6 +132,12 @@ return [
             'path' => storage_path('logs/discord.log'),
             'level' => 'info',
         ],
+
+        'gemini' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/gemini.log'),
+            'level' => 'info',
+        ],
     ],
 
 ];

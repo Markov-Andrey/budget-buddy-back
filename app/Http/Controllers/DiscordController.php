@@ -161,7 +161,7 @@ class DiscordController extends Controller
             } catch (Exception $e) {
                 DB::rollBack();
                 $this->discord->addReaction($message['id'], '👎');
-                Log::error("Error processing MessagesNoAttachment: " . $e->getMessage());
+                Log::channel('discord')->error("Error processing MessagesNoAttachment: " . $e->getMessage());
             }
         }
     }

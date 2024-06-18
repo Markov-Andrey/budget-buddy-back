@@ -45,7 +45,7 @@ class CategorizeProductsJobs implements ShouldQueue
         $products = Receipts::with('data')->find($id);
 
         if ($products === null || $products->data->isEmpty()) {
-            Log::warning('Чек с ID ' . $id . ' не содержит данных для анализа.');
+            Log::channel('gemini')->warning('Чек с ID ' . $id . ' не содержит данных для анализа.');
             return;
         }
 
@@ -56,7 +56,7 @@ class CategorizeProductsJobs implements ShouldQueue
 
         try {
             $response = Gemini::generateText($answer);
-            Log::info('API Categorize Products result: ' . $response);
+            Log::channel('gemini')->info('API Categorize Products result: ' . $response);
             $defaultStructure = config('api.check_subcategories.default_structure');
             $data = ApiResponseStabilizeService::getInfo($response, $defaultStructure);
             $stabilizeData = $data['data']['data'];
