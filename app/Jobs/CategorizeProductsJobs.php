@@ -71,9 +71,9 @@ class CategorizeProductsJobs implements ShouldQueue
                     $product->save();
                 }
             }
-            logger('API Categorize Products successful');
+            Log::channel('gemini')->info('API Categorize Products successful');
         } catch (Exception $e) {
-            logger('API Categorize Products: ' . $e->getMessage());
+            Log::channel('gemini')->error('API Categorize Products: ' . $e->getMessage());
         }
     }
 }
