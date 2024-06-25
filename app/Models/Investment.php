@@ -14,17 +14,17 @@ class Investment extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function investmentDetail()
+    public function investmentDetail(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->HasMany(InvestmentDetails::class);
     }
 
-    public function setTotalAmountAttribute($value)
+    public function setTotalAmountAttribute($value): void
     {
         $this->attributes['total_amount'] = $value * 100;
     }
 
-    public function getTotalAmountAttribute($value)
+    public function getTotalAmountAttribute($value): float|int
     {
         return $value / 100;
     }
