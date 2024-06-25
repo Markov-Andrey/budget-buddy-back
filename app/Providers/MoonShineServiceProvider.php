@@ -17,6 +17,7 @@ use App\MoonShine\Resources\DiscordMessageResource;
 use App\MoonShine\Resources\GroupMembershipsResource;
 use App\MoonShine\Resources\GroupsResource;
 use App\MoonShine\Resources\IncomeResource;
+use App\MoonShine\Resources\InvestmentTypeResource;
 use App\MoonShine\Resources\JobsResource;
 use App\MoonShine\Resources\ReceiptsDataResource;
 use App\MoonShine\Resources\ReceiptsOrganizationResource;
@@ -133,6 +134,12 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                 MenuItem::make(
                     'Technical Inspection',
                     new AutoTechnicalInspectionResource()
+                ),
+            ]),
+            MenuGroup::make('Investment', [
+                MenuItem::make(
+                    'Types',
+                    new InvestmentTypeResource()
                 ),
             ]),
             MenuItem::make(
