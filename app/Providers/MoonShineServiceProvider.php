@@ -17,6 +17,8 @@ use App\MoonShine\Resources\DiscordMessageResource;
 use App\MoonShine\Resources\GroupMembershipsResource;
 use App\MoonShine\Resources\GroupsResource;
 use App\MoonShine\Resources\IncomeResource;
+use App\MoonShine\Resources\InvestmentDetailsResource;
+use App\MoonShine\Resources\InvestmentResource;
 use App\MoonShine\Resources\InvestmentTypeResource;
 use App\MoonShine\Resources\JobsResource;
 use App\MoonShine\Resources\ReceiptsDataResource;
@@ -140,6 +142,14 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
                 MenuItem::make(
                     'Types',
                     new InvestmentTypeResource()
+                ),
+                MenuItem::make(
+                    'Investment',
+                    new InvestmentResource()
+                ),
+                MenuItem::make(
+                    'Investment Detail',
+                    new InvestmentDetailsResource()
                 ),
             ]),
             MenuItem::make(

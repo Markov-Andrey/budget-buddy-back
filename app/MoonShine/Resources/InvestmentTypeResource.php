@@ -22,6 +22,7 @@ class InvestmentTypeResource extends ModelResource
     protected string $model = InvestmentType::class;
 
     protected string $title = 'InvestmentTypes';
+    protected string $column = 'name';
 
     /**
      * @return list<MoonShineComponent|Field>
