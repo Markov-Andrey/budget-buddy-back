@@ -34,16 +34,23 @@
             'invest' => 'Инвестиции',
         ]"
                 :contents="[
-            'income' => view('admin.components.tabs.income', ['amountData' => $amountData, 'user' => $user])->render(),
+            'income' => view('admin.components.tabs.income', [
+                'amountData' => $amountData,
+                'user' => $user,
+            ])->render(),
             'total' => view('admin.components.tabs.total', [
                 'categoriesData' => $categoriesData,
                 'autoData' => $autoData,
                 'subCategoriesDataAuto' => $subCategoriesDataAuto,
                 'subCategoriesData' => $subCategoriesData,
                 'subCategoriesDataPermanent' => $subCategoriesDataPermanent,
-                'user' => $user
+                'user' => $user,
             ])->render(),
-            'invest' => view('admin.components.tabs.invest', ['investmentData' => $investmentData, 'user' => $user])->render(),
+            'invest' => view('admin.components.tabs.invest', [
+                'sumInvestmentData' => $sumInvestmentData,
+                'investmentData' => $investmentData,
+                'user' => $user,
+            ])->render(),
         ]"
             />
     @endif

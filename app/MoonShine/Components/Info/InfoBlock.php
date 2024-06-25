@@ -29,6 +29,7 @@ final class InfoBlock extends MoonShineComponent
     private mixed $incomeAverage;
     private mixed $lossAverage;
     private mixed $investmentData;
+    private mixed $sumInvestmentData = 0;
 
     public function __construct()
     {
@@ -48,7 +49,10 @@ final class InfoBlock extends MoonShineComponent
 
         $this->autoData = Auto::getAutoDataByUserId($id);
 
-        $this->investmentData = InvestmentDetails::getInvestmentDetailsData(1);
+        $this->investmentData = InvestmentDetails::getInvestmentDetailsData($id);
+        foreach ($this->investmentData as $data) {
+            $this->sumInvestmentData += $data['total_value'];
+        }
     }
 
     /*
@@ -68,6 +72,7 @@ final class InfoBlock extends MoonShineComponent
             'incomeAverage' => $this->incomeAverage,
             'lossAverage' => $this->lossAverage,
             'investmentData' => $this->investmentData,
+            'sumInvestmentData' => $this->sumInvestmentData,
         ];
     }
 }

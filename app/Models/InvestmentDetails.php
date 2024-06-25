@@ -55,7 +55,7 @@ class InvestmentDetails extends Model
 
             return [
                 'investment_type_id' => $item->investment_type_id,
-                'total_value' => $item->total_value,
+                'total_value' => round($item->total_value, 2),
                 'total_size' => $item->total_size,
                 'average_cost_per_unit' => $average_cost_per_unit,
                 'investment_type_name' => $investmentTypes[$item->investment_type_id]->name ?? '',

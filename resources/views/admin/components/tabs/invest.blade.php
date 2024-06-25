@@ -24,6 +24,12 @@
                         <td>{{ $item['average_cost_per_unit'] }}</td>
                     </tr>
                 @endforeach
+                <tr>
+                    <td>Сумма</td>
+                    <td>-</td>
+                    <td>{{$sumInvestmentData}}</td>
+                    <td>-</td>
+                </tr>
                 </tbody>
             </table>
         </div>
