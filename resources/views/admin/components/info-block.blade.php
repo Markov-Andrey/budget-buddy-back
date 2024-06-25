@@ -31,6 +31,7 @@
                 :tabs="[
             'income' => 'Доходы',
             'total' => 'Расходы',
+            'invest' => 'Инвестиции',
         ]"
                 :contents="[
             'income' => view('admin.components.tabs.income', ['amountData' => $amountData, 'user' => $user])->render(),
@@ -42,6 +43,7 @@
                 'subCategoriesDataPermanent' => $subCategoriesDataPermanent,
                 'user' => $user
             ])->render(),
+            'invest' => view('admin.components.tabs.invest', ['investmentData' => $investmentData, 'user' => $user])->render(),
         ]"
             />
     @endif

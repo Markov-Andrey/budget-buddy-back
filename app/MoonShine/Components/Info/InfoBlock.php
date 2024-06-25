@@ -6,6 +6,7 @@ namespace App\MoonShine\Components\Info;
 
 use App\Models\Auto;
 use App\Models\Income;
+use App\Models\InvestmentDetails;
 use App\Models\Receipts;
 use App\Models\User;
 use MoonShine\Components\MoonShineComponent;
@@ -27,6 +28,7 @@ final class InfoBlock extends MoonShineComponent
     private mixed $autoData;
     private mixed $incomeAverage;
     private mixed $lossAverage;
+    private mixed $investmentData;
 
     public function __construct()
     {
@@ -45,6 +47,8 @@ final class InfoBlock extends MoonShineComponent
         $this->lossAverage = Receipts::averageMonthlyLastYear($id);
 
         $this->autoData = Auto::getAutoDataByUserId($id);
+
+        $this->investmentData = InvestmentDetails::getInvestmentDetailsData(1);
     }
 
     /*
@@ -63,6 +67,7 @@ final class InfoBlock extends MoonShineComponent
             'autoData' => $this->autoData,
             'incomeAverage' => $this->incomeAverage,
             'lossAverage' => $this->lossAverage,
+            'investmentData' => $this->investmentData,
         ];
     }
 }
