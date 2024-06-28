@@ -9,6 +9,7 @@ use App\Models\ReceiptsData;
 use App\Models\Subcategory;
 use App\Models\User;
 use App\Services\DiscordService;
+use App\Services\PregMatchService;
 use DateTime;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
@@ -107,14 +108,12 @@ class DiscordController extends Controller
                 $price = 0; // По умолчанию цена равна 0
 
                 foreach ($parts as $part) {
-                    if (str_contains($part, 'шт')) {
-                        $count = (int) $part;
-                    } elseif (str_contains($part, 'л') || str_contains($part, 'кг')) {
-                        $weight = (float) $part;
-                    } elseif (str_contains($part, 'руб')) {
-                        $price = (float) $part;
-                    }
+                    $count = PregMatchService::findKeyReturnFloat($part, config('units.quantity')) ?? $count;
+                    $weight = PregMatchService::findKeyReturnFloat($part, config('units.weight')) ?? $weight;
+                    $price = PregMatchService::findKeyReturnFloat($part, config('units.price')) ?? $price;
                 }
+
+                Log::channel('discord')->info($parts[0]. '-' .$count . '-' . $weight . '-' . $price);
 
                 $user = User::query()->where('discord_name', $message['author']['username'])->first();
                 $user_id = $user?->id;
@@ -127,6 +126,8 @@ class DiscordController extends Controller
                     'price' => $price, // Цена
                     'datetime' => date('Y-m-d H:i:s', strtotime($message['timestamp'])), // Дата
                 ];
+
+                Log::channel('discord')->info(json_encode($processedMessages));
             }
 
             try {
@@ -142,6 +143,7 @@ class DiscordController extends Controller
                 $sumAmount = 0;
 
                 foreach ($processedMessages as $data) {
+                    Log::channel('discord')->info($data['name'].' '.$data['price']);
                     if ($data['name'] && $data['price']) {
                         $receiptData[] = [
                             'receipts_id' => $receipt->id,
@@ -153,6 +155,7 @@ class DiscordController extends Controller
                         $sumAmount += $data['price'] * $data['quantity'] * 100;
                     }
                 }
+                Log::channel('discord')->info(json_encode($receiptData));
 
                 ReceiptsData::insert($receiptData);
                 Receipts::where('id', $receipt->id)->update(['amount' => intval($sumAmount)]);
@@ -246,10 +249,7 @@ class DiscordController extends Controller
                 $amount = 0;
 
                 foreach ($parts as $part) {
-                    if (str_contains($part, 'руб')) {
-                        $amount = (int) filter_var($part, FILTER_SANITIZE_NUMBER_INT);
-                        break;
-                    }
+                    $amount = PregMatchService::findKeyReturnFloat($part, config('units.price')) ?? $amount;
                 }
                 $subcategory_id = Subcategory::query()->where('name', $parts[0])->value('id');
 
