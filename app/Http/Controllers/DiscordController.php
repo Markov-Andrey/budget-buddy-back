@@ -34,6 +34,7 @@ class DiscordController extends Controller
     public function index(): void
     {
         $messages = $this->discord->getMessages();
+        $messages = array_reverse($messages); // обработка от старого к новому
         $messagesNoAttachment = [];
         $messagesWithAttachment = [];
         $messagesIncome = [];
@@ -95,6 +96,7 @@ class DiscordController extends Controller
             $lines = explode("\n", $message['content']);
             array_shift($lines);
             foreach ($lines as $line) {
+                usleep(300000);
                 $line = trim($line);
                 $parts = explode(',', $line);
                 $parts = array_map('trim', $parts);
@@ -176,6 +178,7 @@ class DiscordController extends Controller
     private function processMessagesWithAttachment(array $messages): void
     {
         foreach ($messages as $message) {
+            usleep(300000);
             $user = User::query()->where('discord_name', $message['author']['username'])->first();
             $user_id = $user?->id;
             $this->discord->addReaction($message['id'], '👀');
@@ -226,6 +229,7 @@ class DiscordController extends Controller
     private function processMessagesIncome(array $messages): void
     {
         foreach ($messages as $message) {
+            usleep(300000);
             $user = User::query()->where('discord_name', $message['author']['username'])->first();
             $user_id = $user?->id;
 
