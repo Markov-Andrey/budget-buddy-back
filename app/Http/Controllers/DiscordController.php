@@ -41,6 +41,7 @@ class DiscordController extends Controller
 
         if (!empty($messages)) {
             foreach ($messages as $message) {
+                usleep(300000);
                 if (!$this->discord->hasReaction($message, '👀') && $this->discord->hasString($message, 'Афи')) {
                     if ($this->discord->hasString($message, 'чек')) {
                         if ($this->discord->hasAttachments($message)) {
@@ -72,11 +73,11 @@ class DiscordController extends Controller
         if ($count > 0) {
             $message = DiscordMessage::getRandomMessageByCode('accept');
             if ($message) $this->discord->sendMessage($message);
-            Log::channel('discord')->info(`Received {$count} items from Discord.`);
+            Log::channel('discord')->info("Received {$count} items from Discord");
         } else {
             $message = DiscordMessage::getRandomMessageByCode('no_requests');
             if ($message) $this->discord->sendMessage($message);
-            Log::channel('discord')->info('Received empty array from Discord.');
+            Log::channel('discord')->info('Received empty array from Discord');
         }
     }
 
@@ -90,13 +91,13 @@ class DiscordController extends Controller
     private function processMessagesNoAttachment(array $messages): void
     {
         foreach ($messages as $message) {
+            usleep(300000);
             $this->discord->addReaction($message['id'], '👀');
 
             $processedMessages = [];
             $lines = explode("\n", $message['content']);
             array_shift($lines);
             foreach ($lines as $line) {
-                usleep(300000);
                 $line = trim($line);
                 $parts = explode(',', $line);
                 $parts = array_map('trim', $parts);
