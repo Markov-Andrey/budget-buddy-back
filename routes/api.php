@@ -42,6 +42,10 @@ Route::prefix('income')->group(function () {
     Route::delete('/delete/{item}', [IncomeController::class, 'destroy'])->middleware('auth:sanctum');
 });
 
+Route::prefix('investment')->group(function () {
+    Route::get('/show/{limit}', [IncomeController::class, 'show'])->middleware('auth:sanctum');
+});
+
 Route::prefix('category')->group(function () {
     Route::get('/get-income', [CategoryController::class, 'getIncome']);
 });
