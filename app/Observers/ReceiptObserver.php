@@ -17,8 +17,9 @@ class ReceiptObserver
     {
         if ($receipt->image_path) {
             ProcessReceiptJobs::dispatch($receipt);
-            CategorizeProductsJobs::dispatch($receipt);
         }
+        CategorizeProductsJobs::dispatch($receipt);
+
         $this->updateTotalAmount($receipt);
     }
 
