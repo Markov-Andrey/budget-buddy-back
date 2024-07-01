@@ -69,6 +69,7 @@
             ])->render(),
             'invest' => view('admin.components.tabs.invest', [
                 'sumInvestmentData' => $sumInvestmentData,
+                'sumInvestmentCurrentData' => $sumInvestmentCurrentData,
                 'investmentData' => $investmentData,
             ])->render(),
         ]"

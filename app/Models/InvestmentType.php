@@ -14,4 +14,9 @@ class InvestmentType extends Model
     ];
 
     public $timestamps = false;
+
+    public function investmentPrices()
+    {
+        return $this->hasMany(InvestmentPrices::class, 'investment_type_id', 'id');
+    }
 }

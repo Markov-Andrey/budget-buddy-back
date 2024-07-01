@@ -34,6 +34,7 @@ final class InfoBlock extends MoonShineComponent
     private mixed $lossAverage;
     private mixed $investmentData;
     private mixed $sumInvestmentData = 0;
+    private mixed $sumInvestmentCurrentData = 0;
 
     public function __construct()
     {
@@ -62,6 +63,7 @@ final class InfoBlock extends MoonShineComponent
         $this->investmentData = InvestmentDetails::getInvestmentDetailsData($id);
         foreach ($this->investmentData as $data) {
             $this->sumInvestmentData += $data['total_value'];
+            $this->sumInvestmentCurrentData += $data['latest_amount'];
         }
     }
 
@@ -85,6 +87,7 @@ final class InfoBlock extends MoonShineComponent
             'lossAverage' => $this->lossAverage,
             'investmentData' => $this->investmentData,
             'sumInvestmentData' => $this->sumInvestmentData,
+            'sumInvestmentCurrentData' => $this->sumInvestmentCurrentData,
         ];
     }
 }
