@@ -44,7 +44,12 @@ class Income extends Model
 
     public static function calculateByCategory($userId)
     {
-        $incomes = self::query()->where('user_id', $userId)->with('subcategory')->get();
+        $userIds = is_array($userId) ? $userId : [$userId];
+
+        $incomes = self::query()
+            ->whereIn('user_id', $userIds)
+            ->with('subcategory')
+            ->get();
         $details = [];
         $total = 0;
 
@@ -67,17 +72,20 @@ class Income extends Model
     /**
      * Получить среднемесячный доход за последний год для указанного пользователя
      *
-     * @param int $user_id
+     * @param int $userId
      * @return float
      */
-    public static function averageMonthlyLastYear($user_id): float
+    public static function averageMonthlyLastYear($userId): float
     {
+        $userIds = is_array($userId) ? $userId : [$userId];
+
         // Получаем текущую дату и дату, предшествующую году
         $now = now();
         $oneYearAgo = $now->subYear();
 
         // Выполняем запрос
-        $averageIncome = self::where('user_id', $user_id)
+        $averageIncome = self::query()
+            ->whereIn('user_id', $userIds)
             ->where('created_at', '>=', $oneYearAgo)
             ->sum('amount');
 

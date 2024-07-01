@@ -30,8 +30,10 @@ class Auto extends Model
 
     public static function getAutoDataByUserId($userId)
     {
+        $userIds = is_array($userId) ? $userId : [$userId];
+
         $auto = Auto::with('allReceipts', 'allReceipts.subcategory', 'allReceipts.receipt', 'allReceipts.autoInsurance', 'allReceipts.autoTechInspections')
-            ->where('user_id', $userId)
+            ->whereIn('user_id', $userIds)
             ->get()
             ->toArray();
 

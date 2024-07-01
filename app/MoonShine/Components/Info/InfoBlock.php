@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\MoonShine\Components\Info;
 
 use App\Models\Auto;
+use App\Models\GroupMemberships;
+use App\Models\Groups;
 use App\Models\Income;
 use App\Models\InvestmentDetails;
 use App\Models\Receipts;
@@ -19,6 +21,8 @@ final class InfoBlock extends MoonShineComponent
     protected string $view = 'admin.components.info-block';
     protected mixed $user;
     protected mixed $users;
+    protected mixed $group;
+    protected mixed $groups;
     protected mixed $data;
     protected mixed $categoriesData;
     private array $subCategoriesDataProducts;
@@ -34,8 +38,14 @@ final class InfoBlock extends MoonShineComponent
     public function __construct()
     {
         $id = request('user');
+        $groupId = request('group');
         $this->user = $id ? User::query()->findOrFail($id) : null;
         $this->users = User::all();
+        $this->group = $groupId ? Groups::query()->findOrFail($groupId) : null;
+        $this->groups = Groups::all();
+        if ($this->group) {
+            $id = GroupMemberships::query()->where('group_id', '=', $groupId)->pluck('id')->toArray();
+        }
 
         $this->subCategoriesDataProducts = Receipts::calculatePricesBySubcategory($id, 'Продукты');
         $this->subCategoriesDataAuto = Receipts::calculatePricesBySubcategory($id, 'Автомобиль');
@@ -61,8 +71,10 @@ final class InfoBlock extends MoonShineComponent
     protected function viewData(): array
     {
         return [
-            'users' => $this->users,
             'user' => $this->user,
+            'users' => $this->users,
+            'group' => $this->group,
+            'groups' => $this->groups,
             'categoriesData' => $this->categoriesData,
             'subCategoriesData' => $this->subCategoriesDataProducts,
             'subCategoriesDataAuto' => $this->subCategoriesDataAuto,

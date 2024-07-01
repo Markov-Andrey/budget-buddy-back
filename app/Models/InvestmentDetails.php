@@ -28,9 +28,11 @@ class InvestmentDetails extends Model
 
     public static function getInvestmentDetailsData($userId)
     {
+        $userIds = is_array($userId) ? $userId : [$userId];
+
         // Получить агрегированные данные
-        $aggregatedData = InvestmentDetails::whereHas('investment', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
+        $aggregatedData = InvestmentDetails::whereHas('investment', function ($query) use ($userIds) {
+            $query->whereIn('user_id', $userIds);
         })
             ->select(
                 'investment_type_id',

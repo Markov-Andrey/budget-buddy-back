@@ -130,13 +130,15 @@ class Receipts extends Model
 
     public static function calculatePricesByCategory($userId, $categoryIdentifier = null, $sort = true)
     {
+        $userIds = is_array($userId) ? $userId : [$userId];
+
         $query = ReceiptsData::query()
             ->join('receipts', 'receipts.id', '=', 'receipts_data.receipts_id')
             ->join('subcategories', 'receipts_data.subcategory_id', '=', 'subcategories.id')
             ->join('categories', 'subcategories.category_id', '=', 'categories.id')
             ->whereNot('receipts.annulled', '=', 1)
             ->selectRaw('categories.name AS category_name, SUM(receipts_data.price * receipts_data.quantity) AS total_price')
-            ->where('receipts.user_id', $userId)
+            ->whereIn('receipts.user_id', $userIds)
             ->groupBy('categories.name');
 
         // Если задан идентификатор категории, фильтруем по нему
@@ -179,13 +181,15 @@ class Receipts extends Model
 
     public static function calculatePricesBySubcategory($userId, $categoryName, $sort = true)
     {
+        $userIds = is_array($userId) ? $userId : [$userId];
+
         $query = ReceiptsData::query()
             ->join('receipts', 'receipts.id', '=', 'receipts_data.receipts_id')
             ->join('subcategories', 'receipts_data.subcategory_id', '=', 'subcategories.id')
             ->join('categories', 'subcategories.category_id', '=', 'categories.id')
             ->selectRaw('subcategories.name AS subcategory_name, SUM(receipts_data.price * receipts_data.quantity) AS total_price')
             ->whereNot('receipts.annulled', '=', 1)
-            ->where('receipts.user_id', $userId)
+            ->whereIn('receipts.user_id', $userIds)
             ->where('categories.name', $categoryName)
             ->groupBy('subcategories.name');
 
@@ -212,17 +216,20 @@ class Receipts extends Model
     /**
      * Получить среднемесячные траты за последний год для указанного пользователя по чекам
      *
-     * @param int $user_id
+     * @param int $userId
      * @return float
      */
-    public static function averageMonthlyLastYear($user_id): float
+    public static function averageMonthlyLastYear($userId): float
     {
+        $userIds = is_array($userId) ? $userId : [$userId];
+
         // Получаем текущую дату и дату, предшествующую году
         $now = now();
         $oneYearAgo = $now->subYear();
 
         // Выполняем запрос для получения суммы дохода за последний год
-        $averageIncome = self::where('user_id', $user_id)
+        $averageIncome = self::query()
+            ->whereIn('user_id', $userIds)
             ->where('created_at', '>=', $oneYearAgo)
             ->sum('amount');
 
