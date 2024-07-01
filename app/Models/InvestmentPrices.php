@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class InvestmentPrices extends Model
 {
-    public function investmentType()
+    protected $table = 'investment_prices';
+    protected $fillable = [
+        'investment_type_id',
+        'date',
+        'price',
+    ];
+    public $timestamps = false;
+
+    public function investmentType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(InvestmentType::class);
     }

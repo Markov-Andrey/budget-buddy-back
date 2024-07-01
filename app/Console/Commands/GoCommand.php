@@ -25,6 +25,7 @@ class GoCommand extends Command
      */
     public function handle()
     {
+        $this->call('queue:crypto');
         $this->call('queue:discord');
         $this->call('queue:work');
 
