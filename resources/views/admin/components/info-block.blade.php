@@ -20,8 +20,15 @@
                         <option value="{{ $item->id }}" {{ $group && $group->id == $item->id ? 'selected' : '' }}>
                             {{ $item->title }}
                             @php
-                                $userNames = $item->groupMemberships->pluck('user.name')->toArray();
-                                echo '(' . implode(', ', $userNames) . ')';
+                                $isAdmin = false;
+                                $userNames = [];
+                                foreach ($item->groupMemberships as $membership) {
+                                    $userNames[] = $membership->user->name;
+                                    if ($membership->user->id === $item->admin_id) {
+                                        $isAdmin = true;
+                                    }
+                                }
+                                echo '(' . implode(', ', $userNames) . ($isAdmin ? ' 👑' : '') . ')';
                             @endphp
                         </option>
                     @endforeach
