@@ -17,19 +17,15 @@
                 <x-slot:options>
                     <option value="0" {{ $group && $group->id == '0' ? 'selected' : '' }}>-</option>
                     @foreach($groups as $item)
+                        @php
+                            $userNames = $item->groupMemberships->map(function ($membership) use ($item) {
+                                return $membership->user->id === $item->admin_id
+                                    ? $membership->user->name . ' 👑'
+                                    : $membership->user->name;
+                            })->implode(', ');
+                        @endphp
                         <option value="{{ $item->id }}" {{ $group && $group->id == $item->id ? 'selected' : '' }}>
-                            {{ $item->title }}
-                            @php
-                                $isAdmin = false;
-                                $userNames = [];
-                                foreach ($item->groupMemberships as $membership) {
-                                    $userNames[] = $membership->user->name;
-                                    if ($membership->user->id === $item->admin_id) {
-                                        $isAdmin = true;
-                                    }
-                                }
-                                echo '(' . implode(', ', $userNames) . ($isAdmin ? ' 👑' : '') . ')';
-                            @endphp
+                            {{ $item->title }} ({{ $userNames }})
                         </option>
                     @endforeach
                 </x-slot:options>

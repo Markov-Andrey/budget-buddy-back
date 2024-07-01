@@ -40,27 +40,46 @@ final class InfoBlock extends MoonShineComponent
     {
         $id = request('user');
         $groupId = request('group');
+
+        // Извлекаем пользователя, если передан user_id
         $this->user = $id ? User::query()->findOrFail($id) : null;
         $this->users = User::all();
+
+        // Извлекаем группу, если передан group_id
         $this->group = $groupId ? Groups::query()->findOrFail($groupId) : null;
-        $this->groups = Groups::with('groupMemberships', 'groupMemberships.user')->get();
+        $this->groups = Groups::with(['groupMemberships.user'])->get();
+
+        // Извлекаем ids пользователей, входящих в группу
         if ($this->group) {
-            $id = GroupMemberships::query()->where('group_id', '=', $groupId)->pluck('id')->toArray();
+            $userIds = GroupMemberships::query()
+                ->where('group_id', '=', $groupId)
+                ->pluck('user_id') // Извлекаем user_id, а не id
+                ->toArray();
+        } else {
+            $userIds = [$id];
         }
 
-        $this->subCategoriesDataProducts = Receipts::calculatePricesBySubcategory($id, 'Продукты');
-        $this->subCategoriesDataAuto = Receipts::calculatePricesBySubcategory($id, 'Автомобиль');
-        $this->subCategoriesDataPermanent = Receipts::calculatePricesBySubcategory($id, 'Постоянные');
-        $this->categoriesData = Receipts::calculatePricesByCategory($id);
-        $this->amountData = Income::calculateByCategory($id);
-        $this->amountData = Income::calculateByCategory($id);
+        // Добавление admin_id к пользователям группы
+        foreach ($this->groups as $group) {
+            foreach ($group->groupMemberships as $membership) {
+                $membership->user->admin_id = $group->admin_id;
+            }
+        }
 
-        $this->incomeAverage = Income::averageMonthlyLastYear($id);
-        $this->lossAverage = Receipts::averageMonthlyLastYear($id);
+        $this->subCategoriesDataProducts = Receipts::calculatePricesBySubcategory($userIds, 'Продукты');
+        $this->subCategoriesDataAuto = Receipts::calculatePricesBySubcategory($userIds, 'Автомобиль');
+        $this->subCategoriesDataPermanent = Receipts::calculatePricesBySubcategory($userIds, 'Постоянные');
+        $this->categoriesData = Receipts::calculatePricesByCategory($userIds);
+        $this->amountData = Income::calculateByCategory($userIds);
 
-        $this->autoData = Auto::getAutoDataByUserId($id);
+        $this->incomeAverage = Income::averageMonthlyLastYear($userIds);
+        $this->lossAverage = Receipts::averageMonthlyLastYear($userIds);
 
-        $this->investmentData = InvestmentDetails::getInvestmentDetailsData($id);
+        $this->autoData = Auto::getAutoDataByUserId($userIds);
+
+        $this->investmentData = InvestmentDetails::getInvestmentDetailsData($userIds);
+        $this->sumInvestmentData = 0; // Инициализация переменной
+        $this->sumInvestmentCurrentData = 0; // Инициализация переменной
         foreach ($this->investmentData as $data) {
             $this->sumInvestmentData += $data['total_value'];
             $this->sumInvestmentCurrentData += $data['latest_amount'];
