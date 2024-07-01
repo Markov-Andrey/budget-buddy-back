@@ -7,14 +7,15 @@ namespace App\MoonShine\Resources;
 use App\Models\Auto;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ReceiptsData;
-
 use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Fields\Relationships\MorphTo;
 use MoonShine\Fields\Text;
+use MoonShine\QueryTags\QueryTag;
 use MoonShine\Resources\ModelResource;
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Field;
 use MoonShine\Components\MoonShineComponent;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @extends ModelResource<ReceiptsData>
@@ -59,5 +60,19 @@ class ReceiptsDataResource extends ModelResource
     public function rules(Model $item): array
     {
         return [];
+    }
+
+    public function queryTags(): array
+    {
+        return [
+            QueryTag::make(
+                'Все',
+                fn(Builder $query) => $query // Query builder
+            ),
+            QueryTag::make(
+                'Пустые категории',
+                fn(Builder $query) => $query->whereNull('subcategory_id') // Query builder
+            )
+        ];
     }
 }
