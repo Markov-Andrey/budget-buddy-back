@@ -34,6 +34,7 @@ class InvestmentTypeResource extends ModelResource
                 ID::make()->sortable(),
                 Text::make('name', 'name'),
                 Text::make('code', 'code'),
+                Text::make('coingecko_id', 'coingecko_id'),
             ]),
         ];
     }
