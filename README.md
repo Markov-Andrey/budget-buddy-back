@@ -65,6 +65,7 @@ php artisan serve
 ### Utilize Swagger documentation for exploring the project
 
 ## Screenshots:
+<img src="https://github.com/Markov-Andrey/budget-buddy-back/blob/master/public/images/1.png" alt="1" height="550" width="auto">
 <img src="https://github.com/Markov-Andrey/budget-buddy-back/blob/master/public/images/3.png" alt="3" height="550" width="auto">
 <img src="https://github.com/Markov-Andrey/budget-buddy-back/blob/master/public/images/4.png" alt="4" height="550" width="auto">
 <img src="https://github.com/Markov-Andrey/budget-buddy-back/blob/master/public/images/5.png" alt="5" height="550" width="auto">
