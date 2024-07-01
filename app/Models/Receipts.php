@@ -136,7 +136,6 @@ class Receipts extends Model
             ->join('receipts', 'receipts.id', '=', 'receipts_data.receipts_id')
             ->join('subcategories', 'receipts_data.subcategory_id', '=', 'subcategories.id')
             ->join('categories', 'subcategories.category_id', '=', 'categories.id')
-            ->whereNot('receipts.annulled', '=', 1)
             ->selectRaw('categories.name AS category_name, SUM(receipts_data.price * receipts_data.quantity) AS total_price')
             ->whereIn('receipts.user_id', $userIds)
             ->groupBy('categories.name');
@@ -188,7 +187,6 @@ class Receipts extends Model
             ->join('subcategories', 'receipts_data.subcategory_id', '=', 'subcategories.id')
             ->join('categories', 'subcategories.category_id', '=', 'categories.id')
             ->selectRaw('subcategories.name AS subcategory_name, SUM(receipts_data.price * receipts_data.quantity) AS total_price')
-            ->whereNot('receipts.annulled', '=', 1)
             ->whereIn('receipts.user_id', $userIds)
             ->where('categories.name', $categoryName)
             ->groupBy('subcategories.name');
