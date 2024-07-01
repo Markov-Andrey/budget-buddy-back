@@ -19,4 +19,9 @@ class Groups extends Model
     {
         return $this->belongsTo(User::class, 'admin_id');
     }
+
+    public function groupMemberships()
+    {
+        return $this->hasMany(GroupMemberships::class, 'group_id');
+    }
 }

@@ -42,7 +42,7 @@ final class InfoBlock extends MoonShineComponent
         $this->user = $id ? User::query()->findOrFail($id) : null;
         $this->users = User::all();
         $this->group = $groupId ? Groups::query()->findOrFail($groupId) : null;
-        $this->groups = Groups::all();
+        $this->groups = Groups::with('groupMemberships', 'groupMemberships.user')->get();
         if ($this->group) {
             $id = GroupMemberships::query()->where('group_id', '=', $groupId)->pluck('id')->toArray();
         }

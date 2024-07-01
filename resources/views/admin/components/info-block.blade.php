@@ -19,6 +19,10 @@
                     @foreach($groups as $item)
                         <option value="{{ $item->id }}" {{ $group && $group->id == $item->id ? 'selected' : '' }}>
                             {{ $item->title }}
+                            @php
+                                $userNames = $item->groupMemberships->pluck('user.name')->toArray();
+                                echo '(' . implode(', ', $userNames) . ')';
+                            @endphp
                         </option>
                     @endforeach
                 </x-slot:options>
@@ -48,7 +52,6 @@
                 :contents="[
             'income' => view('admin.components.tabs.income', [
                 'amountData' => $amountData,
-                'user' => $user,
             ])->render(),
             'total' => view('admin.components.tabs.total', [
                 'categoriesData' => $categoriesData,
@@ -56,12 +59,10 @@
                 'subCategoriesDataAuto' => $subCategoriesDataAuto,
                 'subCategoriesData' => $subCategoriesData,
                 'subCategoriesDataPermanent' => $subCategoriesDataPermanent,
-                'user' => $user,
             ])->render(),
             'invest' => view('admin.components.tabs.invest', [
                 'sumInvestmentData' => $sumInvestmentData,
                 'investmentData' => $investmentData,
-                'user' => $user,
             ])->render(),
         ]"
         />
