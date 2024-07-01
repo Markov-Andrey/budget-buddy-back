@@ -179,6 +179,11 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
      */
     protected function theme(): array
     {
-        return [];
+        return [
+            'colors' => [
+                'primary' => '#08D49E',
+                'secondary' => '#EFBA0C',
+            ],
+        ];
     }
 }
