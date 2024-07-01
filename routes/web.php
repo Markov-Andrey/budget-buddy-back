@@ -16,14 +16,16 @@ use GuzzleHttp\Client;
 
 Route::get('/test', function () {
     $client = new Client();
+    $vs_currency = 'usd';
+    $interval = 'daily';
+    $days = 365;
+    $crypto = 'bitcoin';
 
-    $response = $client->request('GET', 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart', [
+    $response = $client->request('GET', "https://api.coingecko.com/api/v3/coins/{$crypto}/market_chart", [
         'query' => [
-            'vs_currency' => 'usd',
-            'from' => '1711929600', // Unix timestamp начала периода (например, 30 января 2024 года)
-            'to' => '1712275200',   // Unix timestamp конца периода (например, 4 февраля 2024 года)
-            'interval' => 'daily',  // Интервал выборки (дневные данные)
-            'days' => 5             // Количество дней данных (например, 5 дней)
+            'vs_currency' => $vs_currency,
+            'interval' => $interval,  // Интервал выборки (дневные данные)
+            'days' => $days         // Количество дней данных (например, 5 дней)
         ],
         'headers' => [
             'accept' => 'application/json',
@@ -47,6 +49,21 @@ Route::get('/test', function () {
 
     // Вывод отформатированных данных
     return $formattedData;
+});
+
+Route::get('/cryptos', function () {
+    $client = new Client();
+
+    $response = $client->request('GET', 'https://api.coingecko.com/api/v3/coins/list', [
+        'headers' => [
+            'accept' => 'application/json',
+        ],
+    ]);
+
+    $data = json_decode($response->getBody(), true);
+
+    // Вывод списка доступных криптовалют
+    return $data;
 });
 
 Route::get('/', function () {
