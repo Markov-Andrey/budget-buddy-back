@@ -39,6 +39,7 @@ class DiscordController extends Controller
         $messagesNoAttachment = [];
         $messagesWithAttachment = [];
         $messagesIncome = [];
+        $messagesInvestment = [];
 
         if (!empty($messages)) {
             foreach ($messages as $message) {
@@ -54,6 +55,9 @@ class DiscordController extends Controller
                     if ($this->discord->hasString($message, 'доход')) {
                         $messagesIncome[] = $message;
                     }
+                    if ($this->discord->hasString($message, 'инвестиции')) {
+                        $messagesInvestment[] = $message;
+                    }
                 }
             }
         }
@@ -68,6 +72,10 @@ class DiscordController extends Controller
 
         if (!empty($messagesIncome)) {
             $this->processMessagesIncome($messagesIncome);
+        }
+
+        if (!empty($messagesInvestment)) {
+            $this->processMessagesInvestment($messagesInvestment);
         }
 
         $count = count($messagesNoAttachment) + count($messagesWithAttachment) + count($messagesIncome);
@@ -231,6 +239,54 @@ class DiscordController extends Controller
      * @throws GuzzleException
      */
     private function processMessagesIncome(array $messages): void
+    {
+        foreach ($messages as $message) {
+            usleep(300000);
+            $user = User::query()->where('discord_name', $message['author']['username'])->first();
+            $user_id = $user?->id;
+
+            try {
+                $this->discord->addReaction($message['id'], '👀');
+
+                $lines = explode("\n", $message['content']);
+                array_shift($lines);
+
+                $parts = explode(',', $lines[0]);
+                $parts = array_map('trim', $parts);
+
+                $amount = 0;
+
+                foreach ($parts as $part) {
+                    $amount = PregMatchService::findKeyReturnFloat($part, config('units.price')) ?? $amount;
+                }
+                $subcategory_id = Subcategory::query()->where('name', $parts[0])->value('id');
+
+                if ($subcategory_id) {
+                    $income = new Income();
+                    $income->user_id = $user_id;
+                    $income->subcategory_id = $subcategory_id;
+                    $income->amount = $amount;
+                    $income->save();
+                    $this->discord->addReaction($message['id'], '👍');
+                    Log::channel('discord')->info('Income processed successfully: ' . $message['id']);
+                } else {
+                    $this->discord->addReaction($message['id'], '👎');
+                    Log::channel('discord')->error('Income processing failed: ' . $message['id']);
+                }
+            } catch (\Exception $e) {
+                $this->discord->addReaction($message['id'], '👎');
+                Log::channel('discord')->error('Income processing failed: ' . $message['id'] . ': ' . $e->getMessage());
+            }
+        }
+    }
+
+    // TODO требуется донастройка метода!
+    // Афи, инвестиции
+    // 1010 руб - строка бел суммы чека
+    // BTC, 0.002, 71291 - код, размер, цена за ед в $
+    // ETH, 0.03, 3818 - код, размер, цена за ед в $
+    // LTC, 0.6, 84.48 - код, размер, цена за ед в $
+    public function processMessagesInvestment(array $messages)
     {
         foreach ($messages as $message) {
             usleep(300000);
