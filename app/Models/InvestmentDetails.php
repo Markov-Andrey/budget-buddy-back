@@ -63,7 +63,7 @@ class InvestmentDetails extends Model
                 $average_cost_per_unit = number_format($average_cost_per_unit, 2, '.', '');
             }
 
-            $latestPriceData = $latestPrices[$item->investment_type_id]->first() ?? null;
+            $latestPriceData = isset($latestPrices[$item->investment_type_id]) ? $latestPrices[$item->investment_type_id]->first() : null;
             $latestDate = $latestPriceData ? Carbon::parse($latestPriceData->date)->format('d.m.y') : null;
             $latestPrice = $latestPriceData ? self::formatPrice($latestPriceData->price) : null;
             $latest_amount = $latestPrice ? $latestPrice * $item->total_size : null;

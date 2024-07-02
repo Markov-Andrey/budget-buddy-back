@@ -15,18 +15,25 @@ class FetchCryptoData implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected $crypto;
+
+    public function __construct($crypto)
+    {
+        $this->crypto = $crypto;
+    }
+
     public function handle(): void
     {
-        $cryptoList = InvestmentType::query()->pluck('coingecko_id')->toArray();
+        try {
+            CryptoService::getCryptoData($this->crypto);
+        } catch (\Exception $e) {
+            Log::error("Error fetching data for crypto {$this->crypto}: " . $e->getMessage());
 
-        foreach ($cryptoList as $crypto) {
-            try {
-                CryptoService::getCryptoData($crypto);
-            } catch (\Exception $e) {
-                Log::error("Error fetching data for crypto {$crypto}: " . $e->getMessage());
+            // Повторная отправка задачи в очередь при ошибке "too many requests"
+            if ($e->getMessage() === '429 Too Many Requests') {
+                $delay = now()->addSeconds(5);
+                self::dispatch($this->crypto)->delay($delay);
             }
-
-            sleep(2); // Ожидание 2 секунды между запросами
         }
     }
 }

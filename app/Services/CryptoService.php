@@ -7,6 +7,7 @@ use App\Models\InvestmentType;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Log;
 
 class CryptoService
 {
@@ -26,16 +27,22 @@ class CryptoService
             ->orderBy('date', 'desc')
             ->first();
 
-        // Если записи нет, используем 365 дней
+        $now = Carbon::now();
+        $days = 365; // По умолчанию получаем данные за 365 дней
+
         if ($latestPrice) {
             $lastDate = Carbon::parse($latestPrice->date);
-            $now = Carbon::now();
+
+            // Проверим, если данные обновлялись сегодня, запрос не требуется
+            if ($lastDate->isToday()) {
+                Log::info("Data for {$crypto} is already up-to-date.");
+                return true;
+            }
+
             $days = $lastDate->diffInDays($now);
-        } else {
-            $days = 365;
         }
 
-        $response = $client->request('GET', env('COINGECKO_API_URL')."coins/{$crypto}/market_chart", [
+        $response = $client->request('GET', env('COINGECKO_API_URL') . "coins/{$crypto}/market_chart", [
             'query' => [
                 'vs_currency' => 'usd',
                 'interval' => 'daily',
@@ -53,12 +60,11 @@ class CryptoService
             $date = date('Y-m-d', $timestamp);
             $price = $priceData[1];
 
-            // Сохраняем данные в таблицу investment_prices
-            InvestmentPrices::create([
-                'investment_type_id' => $investmentType->id,
-                'date' => $date,
-                'price' => $price,
-            ]);
+            // Сохраняем данные в таблицу investment_prices, если их нет
+            InvestmentPrices::updateOrCreate(
+                ['investment_type_id' => $investmentType->id, 'date' => $date],
+                ['price' => $price]
+            );
         }
         return true;
     }

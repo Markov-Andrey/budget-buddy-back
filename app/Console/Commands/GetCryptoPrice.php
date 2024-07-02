@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\FetchCryptoData;
+use App\Models\InvestmentType;
 use Illuminate\Console\Command;
 
 class GetCryptoPrice extends Command
@@ -12,7 +13,12 @@ class GetCryptoPrice extends Command
 
     public function handle(): int
     {
-        FetchCryptoData::dispatch()->onQueue('default');
+        $cryptoList = InvestmentType::query()->pluck('coingecko_id')->toArray();
+
+        foreach ($cryptoList as $crypto) {
+            FetchCryptoData::dispatch($crypto)->onQueue('default');
+        }
+
         $this->info('Crypto prices update dispatched to queue.');
 
         return 0;
