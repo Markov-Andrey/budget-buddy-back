@@ -4,14 +4,14 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class GoCommand extends Command
+class PriceCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'go';
+    protected $signature = 'price';
 
     /**
      * The console command description.
@@ -25,7 +25,8 @@ class GoCommand extends Command
      */
     public function handle()
     {
-        $this->call('queue:discord');
+        $this->call('queue:currency');
+        $this->call('queue:crypto');
         $this->call('queue:work');
 
         $this->info('All commands have been executed.');
