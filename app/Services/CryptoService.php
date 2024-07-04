@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class CryptoService
 {
     /**
-     * Получение данных крипты и сохранение в БД
+     * Получение данных крипты и сохранение в БД (Coingecko)
      * @param $crypto
      * @return bool
      * @throws GuzzleException
@@ -47,7 +47,6 @@ class CryptoService
                 'vs_currency' => 'usd',
                 'interval' => 'daily',
                 'days' => $days,
-                'currency_type' => 'USD',
             ],
             'headers' => [
                 'accept' => 'application/json',
@@ -63,8 +62,12 @@ class CryptoService
 
             // Сохраняем данные в таблицу investment_prices, если их нет
             InvestmentPrices::updateOrCreate(
-                ['investment_type_id' => $investmentType->id, 'date' => $date],
-                ['price' => $price]
+                [
+                    'investment_type_id' => $investmentType->id,
+                    'date' => $date,
+                    'price' => $price,
+                    'currency_type' => 'USD',
+                ]
             );
         }
         return true;
