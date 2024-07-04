@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\DiscordMessage;
 use App\Models\Income;
+use App\Models\Investment;
+use App\Models\InvestmentDetails;
+use App\Models\InvestmentType;
 use App\Models\Receipts;
 use App\Models\ReceiptsData;
 use App\Models\Subcategory;
@@ -62,21 +65,10 @@ class DiscordController extends Controller
             }
         }
 
-        if (!empty($messagesNoAttachment)) {
-            $this->processMessagesNoAttachment($messagesNoAttachment);
-        }
-
-        if (!empty($messagesWithAttachment)) {
-            $this->processMessagesWithAttachment($messagesWithAttachment);
-        }
-
-        if (!empty($messagesIncome)) {
-            $this->processMessagesIncome($messagesIncome);
-        }
-
-        if (!empty($messagesInvestment)) {
-            $this->processMessagesInvestment($messagesInvestment);
-        }
+        if (!empty($messagesNoAttachment)) $this->processMessagesNoAttachment($messagesNoAttachment);
+        if (!empty($messagesWithAttachment)) $this->processMessagesWithAttachment($messagesWithAttachment);
+        if (!empty($messagesIncome)) $this->processMessagesIncome($messagesIncome);
+        if (!empty($messagesInvestment)) $this->processMessagesInvestment($messagesInvestment);
 
         $count = count($messagesNoAttachment) + count($messagesWithAttachment) + count($messagesIncome);
         if ($count > 0) {
@@ -280,12 +272,13 @@ class DiscordController extends Controller
         }
     }
 
-    // TODO требуется донастройка метода!
-    // Афи, инвестиции
-    // 1010 руб - строка бел суммы чека
-    // BTC, 0.002, 71291 - код, размер, цена за ед в $
-    // ETH, 0.03, 3818 - код, размер, цена за ед в $
-    // LTC, 0.6, 84.48 - код, размер, цена за ед в $
+    /**
+     * Обрабатывает сообщения о инвестициях и сохраняет их в базе данных
+     *
+     * @param array $messages Массив сообщений о инвестициях
+     * @return void
+     * @throws GuzzleException
+     */
     public function processMessagesInvestment(array $messages)
     {
         foreach ($messages as $message) {
@@ -297,33 +290,33 @@ class DiscordController extends Controller
                 $this->discord->addReaction($message['id'], '👀');
 
                 $lines = explode("\n", $message['content']);
-                array_shift($lines);
+                array_shift($lines); // Удалить первую строку (Афи, инвестиции)
+                $amount_line = array_shift($lines); // Удалить строку с суммой и получить сумму
 
-                $parts = explode(',', $lines[0]);
-                $parts = array_map('trim', $parts);
+                $amount = PregMatchService::findKeyReturnFloat($amount_line, config('units.price'));
 
-                $amount = 0;
+                $investment = new Investment();
+                $investment->user_id = $user_id;
+                $investment->total_amount = $amount;
+                $investment->save();
 
-                foreach ($parts as $part) {
-                    $amount = PregMatchService::findKeyReturnFloat($part, config('units.price')) ?? $amount;
+                foreach ($lines as $line) {
+                    $parts = explode(',', $line);
+                    $parts = array_map('trim', $parts);
+
+                    $invest = new InvestmentDetails();
+                    $invest->investment_id = $investment->id;
+                    $invest->investment_type_id = InvestmentType::query()->where('code', '=', $parts[0])->pluck('id')->first();
+                    $invest->size = $parts[1];
+                    $invest->cost_per_unit = $parts[2];
+                    $invest->save();
                 }
-                $subcategory_id = Subcategory::query()->where('name', $parts[0])->value('id');
 
-                if ($subcategory_id) {
-                    $income = new Income();
-                    $income->user_id = $user_id;
-                    $income->subcategory_id = $subcategory_id;
-                    $income->amount = $amount;
-                    $income->save();
-                    $this->discord->addReaction($message['id'], '👍');
-                    Log::channel('discord')->info('Income processed successfully: ' . $message['id']);
-                } else {
-                    $this->discord->addReaction($message['id'], '👎');
-                    Log::channel('discord')->error('Income processing failed: ' . $message['id']);
-                }
+                $this->discord->addReaction($message['id'], '👍');
+                Log::channel('discord')->info('Investment processed successfully: ' . $message['id']);
             } catch (\Exception $e) {
                 $this->discord->addReaction($message['id'], '👎');
-                Log::channel('discord')->error('Income processing failed: ' . $message['id'] . ': ' . $e->getMessage());
+                Log::channel('discord')->error('Investment processing failed: ' . $message['id'] . ': ' . $e->getMessage());
             }
         }
     }
