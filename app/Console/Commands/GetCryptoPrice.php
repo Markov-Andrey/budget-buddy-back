@@ -13,7 +13,11 @@ class GetCryptoPrice extends Command
 
     public function handle(): int
     {
-        $cryptoList = InvestmentType::query()->pluck('coingecko_id')->toArray();
+        $cryptoList = InvestmentType::query()
+            ->whereNotNull('coingecko_id')
+            ->where('coingecko_id', '!=', '')
+            ->pluck('coingecko_id')
+            ->toArray();
 
         foreach ($cryptoList as $crypto) {
             FetchCryptoData::dispatch($crypto)->onQueue('default');

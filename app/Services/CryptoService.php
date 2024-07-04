@@ -46,7 +46,8 @@ class CryptoService
             'query' => [
                 'vs_currency' => 'usd',
                 'interval' => 'daily',
-                'days' => $days
+                'days' => $days,
+                'currency_type' => 'USD',
             ],
             'headers' => [
                 'accept' => 'application/json',
