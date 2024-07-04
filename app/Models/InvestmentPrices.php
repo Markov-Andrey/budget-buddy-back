@@ -11,6 +11,7 @@ class InvestmentPrices extends Model
         'investment_type_id',
         'date',
         'price',
+        'currency_type',
     ];
     public $timestamps = false;
 

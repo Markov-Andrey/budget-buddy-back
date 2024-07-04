@@ -53,7 +53,6 @@ class CurrencyService
             'query' => [
                 'startDate' => $startDateFormatted,
                 'endDate' => $endDateFormatted,
-                'currency_type' => 'USD',
             ],
             'headers' => [
                 'accept' => 'application/json',
@@ -63,6 +62,7 @@ class CurrencyService
         $data = json_decode($response->getBody(), true);
 
         foreach ($data as $priceData) {
+            Log::info($priceData);
             $date = Carbon::parse($priceData['Date'])->format('Y-m-d');
             $price = $priceData['Cur_OfficialRate'];
 
