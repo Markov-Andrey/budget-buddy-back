@@ -70,7 +70,7 @@ class DiscordController extends Controller
         if (!empty($messagesIncome)) $this->processMessagesIncome($messagesIncome);
         if (!empty($messagesInvestment)) $this->processMessagesInvestment($messagesInvestment);
 
-        $count = count($messagesNoAttachment) + count($messagesWithAttachment) + count($messagesIncome);
+        $count = count($messagesNoAttachment) + count($messagesWithAttachment) + count($messagesIncome) + count($messagesInvestment);
         if ($count > 0) {
             $message = DiscordMessage::getRandomMessageByCode('accept');
             if ($message) $this->discord->sendMessage($message);
