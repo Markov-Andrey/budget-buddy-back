@@ -10,7 +10,8 @@ class InvestmentType extends Model
     protected $fillable = [
         'name',
         'code',
-        'coingecko_id'
+        'coingecko_id',
+        'nbrb_id',
     ];
 
     public $timestamps = false;

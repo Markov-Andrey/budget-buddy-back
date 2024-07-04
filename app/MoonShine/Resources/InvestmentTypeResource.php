@@ -35,6 +35,7 @@ class InvestmentTypeResource extends ModelResource
                 Text::make('name', 'name'),
                 Text::make('code', 'code'),
                 Text::make('coingecko_id', 'coingecko_id'),
+                Text::make('nbrb_id', 'nbrb_id'),
             ]),
         ];
     }
