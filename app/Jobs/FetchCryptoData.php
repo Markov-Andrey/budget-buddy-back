@@ -29,6 +29,7 @@ class FetchCryptoData implements ShouldQueue
         } catch (\Exception $e) {
             Log::error("Error fetching data for crypto {$this->crypto}: " . $e->getMessage());
 
+            // TODO ошибка осталась!!!
             // Повторная отправка задачи в очередь при ошибке "too many requests"
             if ($e->getMessage() === '429 Too Many Requests') {
                 $delay = now()->addSeconds(5);

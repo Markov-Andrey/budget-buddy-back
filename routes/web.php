@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\InvestmentType;
 use Illuminate\Support\Facades\Route;
 use GuzzleHttp\Client;
 
@@ -15,7 +16,8 @@ use GuzzleHttp\Client;
 */
 
 Route::get('/test', function () {
-    $test = 1;
+    $test = InvestmentType::query()->pluck('coingecko_id')->toArray();
+    dd($test);
 
     return $test;
 });

@@ -90,17 +90,19 @@ class InvestmentDetails extends Model
     {
         if ($price > 1) {
             return number_format($price, 2, '.', '');
-        } elseif ($price < 1) {
-            // Преобразование числа в строку и обрезка до 3 значащих цифр после последнего ненулевого знака
-            $priceStr = rtrim(rtrim(number_format($price, 8, '.', ''), '0'), '.');
-            $parts = explode('.', $priceStr);
+        } elseif ($price < 1 && $price > 0) {
+            // Convert the number to a string
+            $priceStr = number_format($price, 8, '.', '');
 
-            if (count($parts) == 2) {
-                $decimalPart = substr($parts[1], 0, 3); // Берем первые 3 цифры после запятой
-                $priceStr = $parts[0] . '.' . $decimalPart;
-            }
+            // Find the first non-zero digit after the decimal point
+            $decimalPart = substr($priceStr, strpos($priceStr, '.') + 1);
+            $nonZeroPos = strspn($decimalPart, '0');
 
-            return rtrim(rtrim($priceStr, '0'), '.');
+            // Get the first three significant digits
+            $significantPart = substr($decimalPart, $nonZeroPos, 3);
+            $formattedPrice = '0.' . str_repeat('0', $nonZeroPos) . $significantPart;
+
+            return rtrim(rtrim($formattedPrice, '0'), '.');
         }
 
         return $price;
