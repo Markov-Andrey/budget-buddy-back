@@ -62,7 +62,6 @@ class CurrencyService
         $data = json_decode($response->getBody(), true);
 
         foreach ($data as $priceData) {
-            Log::info($priceData);
             $date = Carbon::parse($priceData['Date'])->format('Y-m-d');
             $price = $priceData['Cur_OfficialRate'];
 
