@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\InvestmentType;
 use App\Services\CryptoService;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,15 +27,16 @@ class FetchCryptoData implements ShouldQueue
     {
         try {
             CryptoService::getCryptoData($this->crypto);
-        } catch (\Exception $e) {
+        } catch (ClientException $e) {
+            $statusCode = $e->getCode();
             Log::error("Error fetching data for crypto {$this->crypto}: " . $e->getMessage());
 
-            // TODO ошибка осталась!!!
-            // Повторная отправка задачи в очередь при ошибке "too many requests"
-            if ($e->getMessage() === '429 Too Many Requests') {
+            if ($statusCode === 429) {
                 $delay = now()->addSeconds(5);
-                self::dispatch($this->crypto)->delay($delay);
+                dispatch(new FetchCryptoData($this->crypto))->delay($delay);
             }
+        } catch (\Exception $e) {
+            Log::error("Unexpected error fetching data for crypto {$this->crypto}: " . $e->getMessage());
         }
     }
 }
