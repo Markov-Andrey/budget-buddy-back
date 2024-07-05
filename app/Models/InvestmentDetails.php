@@ -73,7 +73,7 @@ class InvestmentDetails extends Model
                 'investment_type_id' => $item->investment_type_id,
                 'total_value' => round($item->total_value, 2),
                 'total_size' => $item->total_size,
-                'average_cost_per_unit' => $average_cost_per_unit,
+                'average_cost_per_unit' => self::formatPrice($average_cost_per_unit),
                 'investment_type_name' => $investmentTypes[$item->investment_type_id]->name ?? '',
                 'investment_type_code' => $investmentTypes[$item->investment_type_id]->code ?? '',
                 'latest_price_date' => $latestDate,
