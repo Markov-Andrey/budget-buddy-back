@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\InvestmentType;
 use App\Services\CryptoService;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Bus\Queueable;
