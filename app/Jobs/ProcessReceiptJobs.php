@@ -64,13 +64,7 @@ class ProcessReceiptJobs implements ShouldQueue
      */
     protected function processDatetime(array $data): void
     {
-        $datetimeString = $data['data']['datetime'] ?? null;
-        $datetime = $datetimeString ? DateTime::createFromFormat('Y-m-d H:i:s', $datetimeString) : false;
-
-        if (!$datetime) {
-            Log::channel('gemini')->warning("Invalid or missing datetime format '$datetimeString'. Using current time.");
-            $datetime = new DateTime('now');
-        }
+        $datetime = new DateTime('now');
 
         $receipt = Receipts::find($this->receipt->id);
         if ($receipt) {

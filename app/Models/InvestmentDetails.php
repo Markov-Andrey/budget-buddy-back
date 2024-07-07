@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -39,7 +38,7 @@ class InvestmentDetails extends Model
                 'investment_type_id',
                 DB::raw('TRIM(TRAILING "." FROM TRIM(TRAILING "0" FROM SUM(size * cost_per_unit))) as total_value'),
                 DB::raw('TRIM(TRAILING "." FROM TRIM(TRAILING "0" FROM TRIM(TRAILING "0" FROM SUM(size)))) as total_size'),
-                DB::raw('TRIM(TRAILING "." FROM TRIM(TRAILING "0" FROM TRIM(TRAILING "0" FROM SUM(size * cost_per_unit) / SUM(size)))) AS average_cost_per_unit'),
+                DB::raw('TRIM(TRAILING "." FROM TRIM(TRAILING "0" FROM TRIM(TRAILING "0" FROM SUM(CASE WHEN size >= 0 THEN size * cost_per_unit ELSE 0 END) / NULLIF(SUM(CASE WHEN size >= 0 THEN size ELSE 0 END), 0)))) AS average_cost_per_unit'),
                 DB::raw('COUNT(*) as count')
             )
             ->groupBy('investment_type_id')
@@ -63,15 +62,16 @@ class InvestmentDetails extends Model
                 $average_cost_per_unit = number_format($average_cost_per_unit, 2, '.', '');
             }
 
+            $total_value = $item->total_size * $item->average_cost_per_unit;
             $latestPriceData = isset($latestPrices[$item->investment_type_id]) ? $latestPrices[$item->investment_type_id]->first() : null;
             $latestDate = $latestPriceData ? Carbon::parse($latestPriceData->date)->format('d.m.y') : null;
             $latestPrice = $latestPriceData ? self::formatPrice($latestPriceData->price) : null;
             $latest_amount = $latestPrice ? $latestPrice * $item->total_size : null;
-            $latest_percent = $latest_amount ? ($latest_amount - $item->total_value) / $item->total_value * 100 : null;
+            $latest_percent = $latest_amount ? ($latest_amount - $total_value) / $total_value * 100 : null;
 
             return [
                 'investment_type_id' => $item->investment_type_id,
-                'total_value' => round($item->total_value, 2),
+                'total_value' => round($total_value, 2),
                 'total_size' => $item->total_size,
                 'average_cost_per_unit' => self::formatPrice($average_cost_per_unit),
                 'investment_type_name' => $investmentTypes[$item->investment_type_id]->name ?? '',
