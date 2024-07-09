@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InfoController;
+use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\ReceiptsController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,7 +44,7 @@ Route::prefix('income')->group(function () {
 });
 
 Route::prefix('investment')->group(function () {
-    Route::get('/show/{limit}', [IncomeController::class, 'show'])->middleware('auth:sanctum');
+    Route::get('/show', [InvestmentController::class, 'show'])->middleware('auth:sanctum');
 });
 
 Route::prefix('category')->group(function () {

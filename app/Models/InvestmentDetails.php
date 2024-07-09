@@ -26,7 +26,12 @@ class InvestmentDetails extends Model
         return $this->belongsTo(InvestmentType::class);
     }
 
-    public static function getInvestmentDetailsData($userId)
+    /**
+     * Получить все инвестиции по пользователям для таблицы
+     * @param $userId
+     * @return mixed
+     */
+    public static function getInvestmentDetailsData($userId): mixed
     {
         $userIds = is_array($userId) ? $userId : [$userId];
 
@@ -82,8 +87,9 @@ class InvestmentDetails extends Model
                 'latest_percent' => round($latest_percent, 2),
             ];
         });
+        $sortedResult = $result->sortByDesc('total_value');
 
-        return $result->toArray();
+        return $sortedResult->values()->toArray();
     }
 
     protected static function formatPrice($price)

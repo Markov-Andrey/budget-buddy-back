@@ -2,29 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Income;
-use App\Models\Investment;
+use App\Models\InvestmentDetails;
 use Illuminate\Support\Facades\Auth;
 
 class InvestmentController
 {
-    public static function show($limit = 25): \Illuminate\Http\JsonResponse
+    public static function show(): \Illuminate\Http\JsonResponse
     {
         $id = Auth::id();
+        $sumInvestmentData = 0; // Инициализация переменной
+        $sumInvestmentCurrentData = 0; // Инициализация переменной
 
-        $totalItems = Investment::query()
-            ->where('user_id', $id)
-            ->count();
-
-        $incomeData = Income::query()
-            ->where('user_id', $id)
-            ->orderBy('created_at', 'desc')
-            ->limit($limit)
-            ->get();
+        $investmentData = InvestmentDetails::getInvestmentDetailsData($id);
+        foreach ($investmentData as $data) {
+            $sumInvestmentData += $data['total_value'];
+            $sumInvestmentCurrentData += $data['latest_amount'];
+        }
 
         return response()->json([
-            'incomeData' => $incomeData,
-            'totalItems' => $totalItems,
+            'investmentData' => $investmentData,
+            'sumInvestmentData' => round($sumInvestmentData, 2),
+            'sumInvestmentCurrentData' => round($sumInvestmentCurrentData, 2),
         ]);
     }
 }
