@@ -45,6 +45,7 @@ Route::prefix('income')->group(function () {
 
 Route::prefix('investment')->group(function () {
     Route::get('/show', [InvestmentController::class, 'show'])->middleware('auth:sanctum');
+    Route::get('/get-invest/{limit}', [InvestmentController::class, 'getInvest'])->middleware('auth:sanctum');
 });
 
 Route::prefix('category')->group(function () {
