@@ -31,7 +31,10 @@ class InvestmentController
     {
         $id = Auth::id();
         $investData = Investment::query()
-            ->with('investmentDetail')
+            ->with([
+                'investmentDetail',
+                'investmentDetail.investmentType',
+            ])
             ->where('user_id', $id)
             ->orderBy('created_at', 'desc')
             ->limit($limit)
@@ -39,7 +42,7 @@ class InvestmentController
 
         $totalItems = Investment::query()
             ->where('user_id', $id)
-            ->get();
+            ->count();
 
         return response()->json([
             'investData' => $investData,
