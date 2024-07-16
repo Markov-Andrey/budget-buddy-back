@@ -27,23 +27,22 @@ class InvestmentController
         ]);
     }
 
-    public static function getInvest($limit = 25): \Illuminate\Http\JsonResponse
+    public static function getInvest($limit = 25)
     {
         $id = Auth::id();
-
-        $data = Investment::query()
+        $investData = Investment::query()
             ->with('investmentDetail')
-            ->where('user_id', '=', $id)
+            ->where('user_id', $id)
+            ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
 
         $totalItems = Investment::query()
-            ->with('investmentDetail')
-            ->where('user_id', '=', $id)
-            ->count();
+            ->where('user_id', $id)
+            ->get();
 
         return response()->json([
-            'investData' => $data,
+            'investData' => $investData,
             'totalItems' => $totalItems,
         ]);
     }
