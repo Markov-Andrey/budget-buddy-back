@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Investment;
 use App\Models\InvestmentDetails;
+use App\Models\InvestmentType;
 use Illuminate\Support\Facades\Auth;
 
 class InvestmentController
@@ -48,5 +49,10 @@ class InvestmentController
             'investData' => $investData,
             'totalItems' => $totalItems,
         ]);
+    }
+
+    public static function getCrypto(): \Illuminate\Database\Eloquent\Collection|array
+    {
+        return InvestmentType::query()->select(['id', 'name', 'code'])->get();
     }
 }
