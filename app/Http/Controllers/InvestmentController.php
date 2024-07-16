@@ -55,4 +55,30 @@ class InvestmentController
     {
         return InvestmentType::query()->select(['id', 'name', 'code'])->get();
     }
+
+    public static function update(Investment $item)
+    {
+        $request = request()->all(); // Получаем все данные из запроса
+        // Обновление основной модели Investment
+        $item->update([
+            'total_amount' => $request['total_amount'],
+            'created_at' => $request['created_at'],
+        ]);
+
+        // Обновление связанных деталей InvestmentDetail
+        foreach ($request['investment_detail'] as $detailData) {
+            $detail = InvestmentDetails::find($detailData['id']);
+
+            if ($detail) {
+                $detail->update([
+                    'investment_type_id' => $detailData['investment_type_id'],
+                    'size' => $detailData['size'],
+                    'cost_per_unit' => $detailData['cost_per_unit'],
+                ]);
+            }
+        }
+
+        // Возвращаем успешный ответ с обновленными данными
+        return response()->json(['message' => 'Данные успешно обновлены'], 200);
+    }
 }
