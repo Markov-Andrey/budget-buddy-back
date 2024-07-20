@@ -1,6 +1,7 @@
 <?php
 namespace App\Jobs;
 
+use App\Http\Controllers\GeminiController;
 use App\Models\ReceiptsData;
 use App\Models\Receipts;
 use App\Models\ReceiptsOrganization;
@@ -32,7 +33,7 @@ class ProcessReceiptJobs implements ShouldQueue
         $prompt = config('api.check_processing.prompt');
 
         try {
-            $response = Gemini::generateTextUsingImageFile('image/jpeg', $filePath, $prompt);
+            $response = GeminiController::generateTextUsingImageFile('image/jpeg', $filePath, $prompt);
             Log::channel('gemini')->info('API Receipt processing result: ' . $response);
             $defaultStructure = config('api.check_processing.default_structure');
             // сервис нормализации данных, если полученные данные битые и не соответствуют формату

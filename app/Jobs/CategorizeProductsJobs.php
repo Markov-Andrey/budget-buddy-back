@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Http\Controllers\GeminiController;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,7 +13,6 @@ use App\Models\Receipts;
 use App\Models\ReceiptsData;
 use App\Models\Subcategory;
 use App\Services\ApiResponseStabilizeService;
-use GeminiAPI\Laravel\Facades\Gemini;
 use Illuminate\Support\Facades\Log;
 
 class CategorizeProductsJobs implements ShouldQueue
@@ -55,7 +55,7 @@ class CategorizeProductsJobs implements ShouldQueue
         $answer = $prompt . $subcategoriesString . $productsString;
 
         try {
-            $response = Gemini::generateText($answer);
+            $response = GeminiController::generateText($answer);
             Log::channel('gemini')->info('API Categorize Products result: ' . $response);
             $defaultStructure = config('api.check_subcategories.default_structure');
             $data = ApiResponseStabilizeService::getInfo($response, $defaultStructure);
